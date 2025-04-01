@@ -46,6 +46,46 @@ enum ChainPositions
 using Coefficients = Filter::CoefficientsPtr;
 void updateCoefficients(Coefficients &old, const Coefficients &replcements);
 Coefficients makePeakFilter(const ChainSettings &chainSettings, double sampleRate);
+template <int Index, typename ChainType, typename CoefficientsType>
+void update(ChainType &chain, const CoefficientsType &coefficients)
+{
+  updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]); // set the coefficients for the chain
+  chain.template setBypassed<Index>(false);                                          // set the chain to not bypassed
+}
+template <typename ChainType, typename CoefficientsType>
+void updateCutFilter(ChainType &chain, const CoefficientsType &coefficients, const Slope &slope)
+{
+  // bypass all of the links in the chain
+  chain.template setBypassed<0>(true); // set the first link to bypassed
+  chain.template setBypassed<1>(true); // set the second link to bypassed
+  chain.template setBypassed<2>(true); // set the third link to bypassed
+  chain.template setBypassed<3>(true); // set the fourth link to bypassed
+
+  switch (slope) // set the bypassed links according to the slope
+  {
+  case Slope_48:
+    update<3>(chain, coefficients); // set the coefficients for the left low cut filter
+  case Slope_36:
+    update<2>(chain, coefficients); // set the coefficients for the left low cut filter
+  case Slope_24:
+    update<1>(chain, coefficients); // set the coefficients for the left low cut filter
+  case Slope_12:
+    update<0>(chain, coefficients); // set the coefficients for the left low cut filter
+  };
+}
+
+inline auto makeLowCutFilter(const ChainSettings &chainSettings, double sampleRate)
+{
+  return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq,
+                                                                                     sampleRate,
+                                                                                     2 * (1 + chainSettings.lowCutSlope)); // create the low cut filter coefficients
+}
+inline auto makeHighCutFilter(const ChainSettings &chainSettings, double sampleRate)
+{
+  return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highCutFreq,
+                                                                                    sampleRate,
+                                                                                    2 * (1 + chainSettings.highCutSlope)); // create the high cut filter coefficients
+}
 //==============================================================================
 /**
  */
@@ -99,34 +139,6 @@ private:
   MonoChain leftChain, rightChain;
 
   void updatePeakFilter(const ChainSettings &chainSettings);
-
-  template <int Index, typename ChainType, typename CoefficientsType>
-  void update(ChainType &chain, const CoefficientsType &coefficients)
-  {
-    updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]); // set the coefficients for the chain
-    chain.template setBypassed<Index>(false);                                          // set the chain to not bypassed
-  }
-  template <typename ChainType, typename CoefficientsType>
-  void updateCutFilter(ChainType &chain, const CoefficientsType &coefficients, const Slope &slope)
-  {
-    // bypass all of the links in the chain
-    chain.template setBypassed<0>(true); // set the first link to bypassed
-    chain.template setBypassed<1>(true); // set the second link to bypassed
-    chain.template setBypassed<2>(true); // set the third link to bypassed
-    chain.template setBypassed<3>(true); // set the fourth link to bypassed
-
-    switch (slope) // set the bypassed links according to the slope
-    {
-    case Slope_48:
-      update<3>(chain, coefficients); // set the coefficients for the left low cut filter
-    case Slope_36:
-      update<2>(chain, coefficients); // set the coefficients for the left low cut filter
-    case Slope_24:
-      update<1>(chain, coefficients); // set the coefficients for the left low cut filter
-    case Slope_12:
-      update<0>(chain, coefficients); // set the coefficients for the left low cut filter
-    };
-  }
 
   void updateLowCutFilters(const ChainSettings &chainSettings);
   void updateHighCutFilters(const ChainSettings &chainSettings);
