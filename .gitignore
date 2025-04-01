@@ -1,4 +1,4 @@
 **/Builds
 **/JuceLibraryCode
 **/.DS_Store
-**/SimpleEQ.filtergraph
+**/*.filtergraph
