@@ -97,6 +97,47 @@ private:
   void updatePeakFilter(const ChainSettings &chainSettings);
   using Coefficients = Filter::CoefficientsPtr;
   static void updateCoefficients(Coefficients &old, const Coefficients &replcements);
+  template <typename ChainType, typename CoefficientsType>
+  void updateCutFilter(ChainType &leftLowCut, const CoefficientsType &cutCoefficients, const Slope &lowCutSlope)
+  {
+    // bypass all of the links in the chain
+    leftLowCut.template setBypassed<0>(true); // set the first link to bypassed
+    leftLowCut.template setBypassed<1>(true); // set the second link to bypassed
+    leftLowCut.template setBypassed<2>(true); // set the third link to bypassed
+    leftLowCut.template setBypassed<3>(true); // set the fourth link to bypassed
+
+    switch (lowCutSlope) // set the bypassed links according to the slope
+    {
+    case Slope_12:
+      *leftLowCut.template get<0>().coefficients = *cutCoefficients[0]; // set the coefficients for the first link
+      leftLowCut.template setBypassed<0>(false);                        // set the first link to not bypassed
+      break;
+    case Slope_24:
+      *leftLowCut.template get<0>().coefficients = *cutCoefficients[0]; // set the coefficients for the first link
+      leftLowCut.template setBypassed<0>(false);                        // set the first link to not bypassed
+      *leftLowCut.template get<1>().coefficients = *cutCoefficients[1]; // set the coefficients for the second link
+      leftLowCut.template setBypassed<1>(false);                        // set the second link to not bypassed
+      break;
+    case Slope_36:
+      *leftLowCut.template get<0>().coefficients = *cutCoefficients[0]; // set the coefficients for the first link
+      leftLowCut.template setBypassed<0>(false);                        // set the first link to not bypassed
+      *leftLowCut.template get<1>().coefficients = *cutCoefficients[1]; // set the coefficients for the second link
+      leftLowCut.template setBypassed<1>(false);                        // set the second link to not bypassed
+      *leftLowCut.template get<2>().coefficients = *cutCoefficients[2]; // set the coefficients for the third link
+      leftLowCut.template setBypassed<2>(false);                        // set the third link to not bypassed
+      break;
+    case Slope_48:
+      *leftLowCut.template get<0>().coefficients = *cutCoefficients[0]; // set the coefficients for the first link
+      leftLowCut.template setBypassed<0>(false);                        // set the first link to not bypassed
+      *leftLowCut.template get<1>().coefficients = *cutCoefficients[1]; // set the coefficients for the second link
+      leftLowCut.template setBypassed<1>(false);                        // set the second link to not bypassed
+      *leftLowCut.template get<2>().coefficients = *cutCoefficients[2]; // set the coefficients for the third link
+      leftLowCut.template setBypassed<2>(false);                        // set the third link to not bypassed
+      *leftLowCut.template get<3>().coefficients = *cutCoefficients[3]; // set the coefficients for the fourth link
+      leftLowCut.template setBypassed<3>(false);                        // set the fourth link to not bypassed
+      break;
+    }
+  }
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };
