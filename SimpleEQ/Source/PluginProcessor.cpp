@@ -205,12 +205,26 @@ void SimpleEQAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    // write apvts to the memory block
+    juce::MemoryOutputStream stream(destData, true); // create a memory output stream to write to the memory block
+    apvts.state.writeToStream(stream);               // write the state of the apvts to the stream
 }
 
 void SimpleEQAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    // restore plugin state from the memory block
+
+    // check if the data is valid
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes); // read the data from the memory block
+    if (tree.isValid())                                           // check if the tree is valid
+    {
+        apvts.replaceState(tree); // replace the state of the apvts with the new state
+        updateFilters();          // update the filters with the new settings
+    }
 }
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts)
