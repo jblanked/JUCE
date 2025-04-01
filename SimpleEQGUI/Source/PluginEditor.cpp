@@ -11,7 +11,14 @@
 
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p)
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      peakFreqSliderAttachment(audioProcessor.apvts, "peakFrequency", peakFreqSlider),
+      peakGainSliderAttachment(audioProcessor.apvts, "peakGain", peakGainSlider),
+      peakQualitySliderAttachment(audioProcessor.apvts, "peakQuality", peakQualitySlider),
+      lowCutFreqSliderAttachment(audioProcessor.apvts, "lowCutFrequency", lowCutFreqSlider),
+      highCutFreqSliderAttachment(audioProcessor.apvts, "highCutFrequency", highCutFreqSlider),
+      lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
+      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider)
 {
   for (auto *comp : getComps())
   {
