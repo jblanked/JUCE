@@ -20,16 +20,32 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
       lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
       highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider)
 {
+
   for (auto *comp : getComps())
   {
     addAndMakeVisible(comp); // add the components to the editor
   }
+
+  // listen for parameter changes
+  const auto &params = audioProcessor.getParameters(); // get the parameters from the audio processor
+  for (auto param : params)
+  {
+    param->addListener(this); // add the editor as a listener to each parameter
+  }
+
+  startTimerHz(60); // start the timer at 60 hertz refresh rate
 
   setSize(600, 400); // size of the editor window
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
+  // de-register as a listener
+  const auto &params = audioProcessor.getParameters(); // get the parameters from the audio processor
+  for (auto param : params)
+  {
+    param->removeListener(this); // remove the editor as a listener to each parameter
+  }
 }
 
 //==============================================================================
@@ -148,8 +164,11 @@ void SimpleEQAudioProcessorEditor::timerCallback()
   if (parametersChanged.compareAndSetBool(false, true))
   {
     // update the chain with the new parameters
-    //audioProcessor.updateChain(monoChain); // update the chain with the new parameters
-    //repaint();                             // repaint the editor window to show the new frequency response
+    auto chainSettings = getChainSettings(audioProcessor.apvts);                              // get the chain settings from the apvts
+    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());    // create the peak filter coefficients
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients); // set the coefficients for the peak filter
+
+    repaint(); // repaint the editor window to show the new frequency response
   }
 }
 
