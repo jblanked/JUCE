@@ -53,12 +53,18 @@ public:
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
 
-    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    
+  // function to create the parameter layout for the AudioProcessorValueTreeState
+  static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
+  // list of parameters we will use in the EQ
   juce::AudioProcessorValueTreeState apvts{*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
+  // create filter types
+  using Filter = juce::dsp::IIR::Filter<float>;
+  using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+  using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+  MonoChain leftChain, rightChain;
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };

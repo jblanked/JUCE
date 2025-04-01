@@ -95,6 +95,23 @@ void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+
+    // prepare filters before we use them by passing a ProcessSpec object to the chain,
+    // which will then pass it to each link in the chain
+    juce::dsp::ProcessSpec spec;
+
+    // maximum samples we will press at one time
+    spec.maximumBlockSize = samplesPerBlock;
+
+    // numbers of channels
+    spec.numChannels = 1; // mono
+
+    // sample rate
+    spec.sampleRate = sampleRate;
+
+    // prepare the chain with the spec
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
 }
 
 void SimpleEQAudioProcessor::releaseResources()
@@ -143,18 +160,24 @@ void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto *channelData = buffer.getWritePointer(channel);
+    // process chain requries a processing context in order to run the audio in the links of the chain
+    // in order to make a processing context, we need to create an AudioBlock object
+    // the processBlock function is called by the host
 
-        // ..do something to the data...
-    }
+    // create an audio block object to hold the buffer
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    // extract the left and right channels from the block
+    auto leftBlock = block.getSingleChannelBlock(0);  // left channel
+    auto rightBlock = block.getSingleChannelBlock(1); // right channel
+
+    // create process context objects for the left and right channels
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);   // process context for left channel
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock); // process context for right channel
+
+    // pass context to the chain to process the audio in the links of the chain
+    leftChain.process(leftContext);   // process the left channel
+    rightChain.process(rightContext); // process the right channel
 }
 
 //==============================================================================
@@ -187,23 +210,32 @@ void SimpleEQAudioProcessor::setStateInformation(const void *data, int sizeInByt
 juce::AudioProcessorValueTreeState::ParameterLayout
 SimpleEQAudioProcessor::createParameterLayout()
 {
+    // define the layout of the parameters we will use in the EQ
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+    // add a low cut frequency parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("lowCutFrequency", 1), "LowCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
 
+    // add a high cut frequency parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("highCutFrequency", 2), "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
 
+    // add a peak frequency parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakFrequency", 3), "Peak Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 750.f));
 
+    // add a peak gain parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakGain", 4), "Peak Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.1f, 1.f), 0.f));
 
+    // add a peak quality parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakQuality", 5), "Peak Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
 
+    // define a list of filter types for the low and high cut filters
     juce::StringArray filterTypes{"12 dB/Oct", "24 dB/Oct", "36 dB/Oct", "48 dB/Oct"};
 
+    // add the list of filter types to the layout
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("lowCutSlope", 6), "LowCut Slope", filterTypes, 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("highCutSlope", 7), "HighCut Slope", filterTypes, 0));
 
+    // return the layout
     return layout;
 }
 
