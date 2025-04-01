@@ -124,6 +124,11 @@ private:
       update<0>(chain, coefficients); // set the coefficients for the left low cut filter
     };
   }
+
+  void updateLowCutFilters(const ChainSettings &chainSettings);
+  void updateHighCutFilters(const ChainSettings &chainSettings);
+
+  void updateFilters();
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };
