@@ -194,9 +194,8 @@ bool SimpleEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor *SimpleEQAudioProcessor::createEditor()
 {
-    // return new SimpleEQAudioProcessorEditor(*this);
-    return new juce::GenericAudioProcessorEditor(*this);
-    // This creates a generic editor so we can visualize this in standalone mode.
+    return new SimpleEQAudioProcessorEditor(*this);
+    // return new juce::GenericAudioProcessorEditor(*this); // This creates a generic editor so we can visualize this in standalone mode.
 }
 
 //==============================================================================
