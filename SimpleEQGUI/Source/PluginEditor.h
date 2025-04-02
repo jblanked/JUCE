@@ -124,10 +124,10 @@ struct AnalyzerPathGenerator
 
       if (!std::isnan(y) && !std::isinf(y))
       {
-        auto binFreq = binNum * binWidth;                                // get the frequency of the bin
-        auto normalizedBinX = juce::mapFromLog10(binFreq, 1.f, 20000.f); // map the frequency to a value between 0 and 1
-        int binX = std::floor(normalizedBinX * width);                   // get the x position of the bin
-        p.lineTo(binX, y);                                               // add a line to the path for the bin
+        auto binFreq = binNum * binWidth;                                 // get the frequency of the bin
+        auto normalizedBinX = juce::mapFromLog10(binFreq, 20.f, 20000.f); // map the frequency to a value between 0 and 1
+        int binX = std::floor(normalizedBinX * width);                    // get the x position of the bin
+        p.lineTo(binX, y);                                                // add a line to the path for the bin
       }
     }
     pathFifo.push(p); // push the path to the FIFO buffer

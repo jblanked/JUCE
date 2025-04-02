@@ -320,8 +320,10 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     responseCurve.lineTo(responseArea.getX() + i, map(mags[i])); // add a line to the path for each magnitude value
   }
 
+  leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
+
   // draw the path
-  g.setColour(Colours::blue);                            // set the colour to blue
+  g.setColour(Colours::lightblue);                       // set the colour to lightblue
   g.strokePath(leftChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
 
   g.setColour(Colours::orange);                                // set the colour to orange
