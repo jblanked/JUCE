@@ -22,24 +22,39 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
   g.setColour(Colours::lightblue); // set the colour to blue
   g.drawEllipse(bounds, 1.f);      // draw the ellipse with a width of 1 pixel
 
-  auto center = bounds.getCentre(); // get the center of the ellipse
+  if (auto *rswl = dynamic_cast<RotarySliderWithLabels *>(&slider))
+  {
+    auto center = bounds.getCentre(); // get the center of the ellipse
 
-  Path p;                        // create a path for the slider knob
-  Rectangle<float> r;            // create a rectangle for the slider knob
-  r.setLeft(center.getX() - 2);  // set the left edge of the rectangle to the center of the ellipse minus 2 pixels
-  r.setRight(center.getX() + 2); // set the right edge of the rectangle to the center of the ellipse plus 2 pixels
-  r.setTop(bounds.getY());       // set the top edge of the rectangle to the top of the ellipse
-  r.setBottom(center.getY());    // set the bottom edge of the rectangle to the center of the ellipse
+    Path p;                                                   // create a path for the slider knob
+    Rectangle<float> r;                                       // create a rectangle for the slider knob
+    r.setLeft(center.getX() - 2);                             // set the left edge of the rectangle to the center of the ellipse minus 2 pixels
+    r.setRight(center.getX() + 2);                            // set the right edge of the rectangle to the center of the ellipse plus 2 pixels
+    r.setTop(bounds.getY());                                  // set the top edge of the rectangle to the top of the ellipse
+    r.setBottom(center.getY() - rswl->getTextHeight() * 1.5); // set the bottom edge of the rectangle to the center of the ellipse
 
-  p.addRectangle(r); // add the rectangle to the path
+    p.addRoundedRectangle(r, 2.f);              // add a rounded rectangle to the path for the slider knob
+    jassert(rotaryStartAngle < rotaryEndAngle); // check that the start angle is less than the end angle
 
-  jassert(rotaryStartAngle < rotaryEndAngle); // check that the start angle is less than the end angle
+    auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle); // map the slider position to the angle of the knob
 
-  auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle); // map the slider position to the angle of the knob
+    p.applyTransform(AffineTransform::rotation(sliderAngRad, center.getX(), center.getY())); // rotate the path to the angle of the knob
 
-  p.applyTransform(AffineTransform::rotation(sliderAngRad, center.getX(), center.getY())); // rotate the path to the angle of the knob
+    g.fillPath(p); // fill the path with the colour
 
-  g.fillPath(p); // fill the path with the colour
+    g.setFont(rswl->getTextHeight());                        // set the font size to the height of the text label
+    auto text = rswl->getDisplayString();                    // get the text label for the slider
+    auto strWidth = g.getCurrentFont().getStringWidth(text); // get the width of the text label
+
+    r.setSize(strWidth + 4, rswl->getTextHeight() + 2); // set the size of the rectangle to the width and height of the text label
+    r.setCentre(bounds.getCentre());
+
+    g.setColour(Colours::black); // set the colour to black
+    g.fillRect(r);               // fill the rectangle with the colour
+
+    g.setColour(Colours::white);                                         // set the colour to white
+    g.drawFittedText(text, r.toNearestInt(), Justification::centred, 1); // draw the text label in the rectangle
+  }
 }
 
 void RotarySliderWithLabels::paint(juce::Graphics &g)
@@ -64,14 +79,19 @@ void RotarySliderWithLabels::paint(juce::Graphics &g)
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 {
-  auto bounds = getLocalBounds();                          // get the bounds of the slider
+  auto bounds = getLocalBounds();                                // get the bounds of the slider
   auto size = juce::jmin(bounds.getWidth(), bounds.getHeight()); // get the minimum size of the slider
-  size -= getTextHeight() * 2;                             // subtract the height of the text label from the size
-  juce::Rectangle<int> r;                                  // create a rectangle for the slider bounds
-  r.setSize(size, size);                                   // set the size of the rectangle to the size of the slider
-  r.setCentre(bounds.getCentreX(), 0);                     // set the center of the rectangle to the center of the slider
-  r.setY(2);                                               // set the y position of the rectangle to 2 pixels from the top of the slider
-  return r;                                                // return the rectangle
+  size -= getTextHeight() * 2;                                   // subtract the height of the text label from the size
+  juce::Rectangle<int> r;                                        // create a rectangle for the slider bounds
+  r.setSize(size, size);                                         // set the size of the rectangle to the size of the slider
+  r.setCentre(bounds.getCentreX(), 0);                           // set the center of the rectangle to the center of the slider
+  r.setY(2);                                                     // set the y position of the rectangle to 2 pixels from the top of the slider
+  return r;                                                      // return the rectangle
+}
+
+juce::String RotarySliderWithLabels::getDisplayString() const
+{
+  return juce::String(getValue()); // return the value of the slider as a string
 }
 
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p)
