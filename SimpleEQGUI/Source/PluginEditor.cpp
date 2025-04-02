@@ -137,14 +137,24 @@ ResponseCurveComponent::~ResponseCurveComponent()
 
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p), peakFreqSliderAttachment(audioProcessor.apvts, "peakFrequency", peakFreqSlider),
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      //
+      peakFreqSlider(*audioProcessor.apvts.getParameter("peakFrequency"), "Hz"),
+      peakGainSlider(*audioProcessor.apvts.getParameter("peakGain"), "dB"),
+      peakQualitySlider(*audioProcessor.apvts.getParameter("peakQuality"), ""),
+      lowCutFreqSlider(*audioProcessor.apvts.getParameter("lowCutFrequency"), "Hz"),
+      highCutFreqSlider(*audioProcessor.apvts.getParameter("highCutFrequency"), "Hz"),
+      lowCutSlopeSlider(*audioProcessor.apvts.getParameter("lowCutSlope"), "dB/Oct"),
+      highCutSlopeSlider(*audioProcessor.apvts.getParameter("highCutSlope"), "dB/Oct"),
+      //
+      responseCurveComponent(audioProcessor),
+      peakFreqSliderAttachment(audioProcessor.apvts, "peakFrequency", peakFreqSlider),
       peakGainSliderAttachment(audioProcessor.apvts, "peakGain", peakGainSlider),
       peakQualitySliderAttachment(audioProcessor.apvts, "peakQuality", peakQualitySlider),
       lowCutFreqSliderAttachment(audioProcessor.apvts, "lowCutFrequency", lowCutFreqSlider),
       highCutFreqSliderAttachment(audioProcessor.apvts, "highCutFrequency", highCutFreqSlider),
       lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
-      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider),
-      responseCurveComponent(audioProcessor)
+      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider)
 {
 
   for (auto *comp : getComps())

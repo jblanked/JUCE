@@ -11,15 +11,36 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-// generic class for all sliders in GUI
-
-struct CustomRotarySlider : public juce::Slider
+struct LookAndFeel : juce::LookAndFeel_V4
 {
-  CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
-                                      juce::Slider::TextEntryBoxPosition::NoTextBox)
+  void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
+                        float sliderPosProportional, float rotaryStartAngle,
+                        float rotaryEndAngle, juce::Slider &slider) override {}
+};
+
+struct RotarySliderWithLabels : juce::Slider
+{
+  RotarySliderWithLabels(juce::RangedAudioParameter &rap, const juce::String &unitSuffix) : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+                                                                                                         juce::Slider::TextEntryBoxPosition::NoTextBox),
+                                                                                            param(&rap), suffix(unitSuffix)
   {
-    //
+    setLookAndFeel(&lnf); // set the custom look and feel for the slider
   }
+
+  ~RotarySliderWithLabels()
+  {
+    setLookAndFeel(nullptr); // reset the look and feel to the default
+  }
+
+  void paint(juce::Graphics &g) override {}
+  juce::Rectangle<int> getSliderBounds() const;
+  int getTextHeight() const { return 14; } // height of the text label
+  juce::String getDisplayString() const;
+
+private:
+  LookAndFeel lnf;                   // custom look and feel for the slider
+  juce::RangedAudioParameter *param; // pointer to the parameter that the slider is controlling
+  juce::String suffix;               // suffix for the parameter value
 };
 
 struct ResponseCurveComponent : public juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
@@ -57,7 +78,7 @@ private:
   // access the processor object that created it.
   SimpleEQAudioProcessor &audioProcessor;
 
-  CustomRotarySlider peakFreqSlider,
+    RotarySliderWithLabels peakFreqSlider,
       peakGainSlider,
       peakQualitySlider,
       lowCutFreqSlider,
