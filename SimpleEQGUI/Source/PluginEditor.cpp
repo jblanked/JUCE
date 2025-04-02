@@ -285,9 +285,9 @@ void ResponseCurveComponent::resized()
 
   // draw frequency lines
   Array<float> freqs{
-      20, 30, 40, 50, 100,
-      200, 300, 400, 500, 1000,
-      2000, 3000, 4000, 5000, 10000,
+      20, 50, 100,
+      200, 500, 1000,
+      2000, 5000, 10000,
       20000};
 
   auto renderArea = getRenderArea();    // get the render area for the response curve component
@@ -321,7 +321,36 @@ void ResponseCurveComponent::resized()
     g.drawHorizontalLine(y, left, right);                            // draw a horizontal line at the y position
   }
 
-  // g.drawRect(getAnalysisArea()); // draw a rectangle around the analysis area
+  g.setColour(Colours::lightgrey); // set the colour to light grey
+  const int fontHeight = 10;       // height of the font
+  g.setFont(fontHeight);           // set the font size to the height of the font
+
+  // loop through xs and draw the frequency labels
+  for (int i = 0; i < xs.size(); ++i)
+  {
+    auto x = xs[i];       // get the x position
+    auto freq = freqs[i]; // get the frequency
+
+    bool addK = false; // flag to indicate if the suffix should be added
+    String str;
+    if (freq > 999.f) // check if the frequency is greater than 999
+    {
+      freq /= 1000.f; // divide the frequency by 1000
+      addK = true;    // set the flag to true to indicate that the suffix should be added
+    }
+    str << freq; // add the frequency to the string
+    if (addK)
+      str << "k"; // add the suffix "k" if the flag is set
+    str << "Hz";  // add the suffix "Hz" to the string
+
+    auto strWidth = g.getCurrentFont().getStringWidth(str); // get the width of the string
+    Rectangle<int> r;                                       // create a rectangle for the string
+    r.setSize(strWidth, fontHeight);                        // set the size of the rectangle to the width and height of the string
+    r.setCentre(x, 0);                                      // set the center of the rectangle to the x position and 0 y position
+    r.setY(1);                                              // set the y position of the rectangle to 1 pixel from the top of the response area
+
+    g.drawFittedText(str, r, Justification::centred, 1); // draw the string in the rectangle
+  }
 }
 
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
