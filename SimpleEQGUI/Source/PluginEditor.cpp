@@ -147,7 +147,8 @@ juce::String RotarySliderWithLabels::getDisplayString() const
   return str; // return the string
 }
 
-ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p)
+ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p),
+                                                                            leftChannelFifo(&audioProcessor.leftChannelFifo)
 {
   // listen for parameter changes
   const auto &params = audioProcessor.getParameters(); // get the parameters from the audio processor
@@ -155,6 +156,13 @@ ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audi
   {
     param->addListener(this); // add the editor as a listener to each parameter
   }
+
+  // split audio spectrum from 20Hz to 20kHz into FFTOrder bins, which store the magnitude level of a range of frequencies
+  leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048); // change the order of the FFT data generator to 2048
+
+  // initialize mono buffer with proper size
+  monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize()); // set the size of the mono buffer to the size of the FFT data generator
+
   updateChain(); // update the chain with the initial parameters
 
   startTimerHz(60); // start the timer at 60 hertz refresh rate
@@ -167,12 +175,61 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
 
 void ResponseCurveComponent::timerCallback()
 {
+  // while there are buffers to pull, if we can pull a buffer, send to FFT data generator
+  juce::AudioBuffer<float> tempIncomingBuffer;
+
+  while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
+  {
+    if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
+    {
+      auto size = tempIncomingBuffer.getNumSamples(); // get the size of the buffer
+
+      // shift data
+      juce::FloatVectorOperations::copy(
+          monoBuffer.getWritePointer(0, 0),   // copy to 0 index
+          monoBuffer.getReadPointer(0, size), // read from 1 index
+          monoBuffer.getNumSamples() - size); // get the number of samples in that buffer
+
+      // copy data
+      juce::FloatVectorOperations::copy(
+          monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size), // copy to the end of the buffer
+          tempIncomingBuffer.getReadPointer(0, 0),                          // read from the incoming buffer
+          size);                                                            // get the size of the buffer
+
+      // send buffers to generator
+      leftChannelFFTDataGenerator.produceFFTDataForRendering(
+          monoBuffer, // send the mono buffer to the generator
+          -48.f);     // set the negative infinity value to -48 dB
+    }
+  }
+
+  // while there are FFT data buffers to pull, if we can pull a buffer,generate the path
+  const auto bounds = getAnalysisArea().toFloat();                        // get the bounds of the analysis area
+  const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();          // get the size of the FFT data generator
+  const auto binWidth = audioProcessor.getSampleRate() / (double)fftSize; // get the bin width of the FFT data generator
+
+  while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
+  {
+    std::vector<float> fftData; // create a vector for the FFT data
+    if (leftChannelFFTDataGenerator.getFFTData(fftData))
+    {
+      pathProducer.generatePath(fftData, bounds, fftSize, binWidth, -48.f); // generate the path for the FFT data
+    }
+  }
+
+  // while there are paths to pull, pull as many as we can, display the most recent path
+  while (pathProducer.getNumPathsAvailable() > 0)
+  {
+    pathProducer.getPath(leftChannelFFTPath); // get the path for the left channel FFT data
+  }
+
   // check if the parameters have changed
   if (parametersChanged.compareAndSetBool(false, true))
   {
     updateChain(); // update the chain with the new parameters
-    repaint();     // repaint the editor window to show the new frequency response
   }
+
+  repaint(); // repaint the editor window to show the new changes
 }
 
 void ResponseCurveComponent::updateChain()
@@ -262,6 +319,10 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     // add a line to the path for each magnitude value
     responseCurve.lineTo(responseArea.getX() + i, map(mags[i])); // add a line to the path for each magnitude value
   }
+
+  // draw the path
+  g.setColour(Colours::blue);                            // set the colour to blue
+  g.strokePath(leftChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
 
   g.setColour(Colours::orange);                                // set the colour to orange
   g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f); // draw a rounded rectangle around the response area
