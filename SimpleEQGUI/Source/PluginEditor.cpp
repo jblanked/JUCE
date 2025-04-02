@@ -53,13 +53,25 @@ void RotarySliderWithLabels::paint(juce::Graphics &g)
 
   auto sliderBounds = getSliderBounds(); // get the bounds of the slider
 
+  g.setColour(Colours::lightblue); // set the colour to light blue
+  g.drawRect(getLocalBounds());    // draw the rectangle around the slider
+  g.setColour(Colours::yellow);    // set the colour to yellow
+  g.drawRect(sliderBounds);        // draw the rectangle around the slider bounds
+
   getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(),
                                     jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0), startAng, endAng, *this); // draw the rotary slider
 }
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 {
-  return getLocalBounds(); // get the local bounds of the slider
+  auto bounds = getLocalBounds();                          // get the bounds of the slider
+  auto size = juce::jmin(bounds.getWidth(), bounds.getHeight()); // get the minimum size of the slider
+  size -= getTextHeight() * 2;                             // subtract the height of the text label from the size
+  juce::Rectangle<int> r;                                  // create a rectangle for the slider bounds
+  r.setSize(size, size);                                   // set the size of the rectangle to the size of the slider
+  r.setCentre(bounds.getCentreX(), 0);                     // set the center of the rectangle to the center of the slider
+  r.setY(2);                                               // set the y position of the rectangle to 2 pixels from the top of the slider
+  return r;                                                // return the rectangle
 }
 
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p)
