@@ -59,6 +59,7 @@ struct ResponseCurveComponent : public juce::Component, juce::AudioProcessorPara
   void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {};
   void timerCallback() override; // query atomic flag to decide if the chain needs updating and our components need repainting
   void paint(juce::Graphics &g) override;
+  void resized() override;
 
 private:
   // This reference is provided as a quick way for your editor to
@@ -68,6 +69,12 @@ private:
   MonoChain monoChain;                         // chain to hold the filter coefficients
 
   void updateChain(); // update the chain with the new parameters
+
+  juce::Image background; // background image for the response curve component
+
+  juce::Rectangle<int> getRenderArea(); // get the render area for the response curve component
+
+  juce::Rectangle<int> getAnalysisArea(); // get the analysis area for the response curve component
 };
 
 //==============================================================================

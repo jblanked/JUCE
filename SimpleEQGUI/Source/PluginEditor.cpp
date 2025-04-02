@@ -200,9 +200,11 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
 
   g.fillAll(Colours::black); // fill the background with black
 
+  g.drawImage(background, getLocalBounds().toFloat()); // draw the background image
+
   // get dimensions
-  auto responseArea = getLocalBounds(); // get the bounds of the editor window
-  auto w = responseArea.getWidth();     // get the width of the response area
+  auto responseArea = getAnalysisArea(); // get the render area for the response curve component
+  auto w = responseArea.getWidth();      // get the width of the response area
 
   // individual chain elements
   auto &lowcut = monoChain.get<ChainPositions::LowCut>();   // get the low cut filter from the chain
@@ -266,13 +268,83 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     responseCurve.lineTo(responseArea.getX() + i, map(mags[i])); // add a line to the path for each magnitude value
   }
 
-  g.setColour(Colours::orange);                             // set the colour to orange
-  g.drawRoundedRectangle(responseArea.toFloat(), 4.f, 1.f); // draw a rounded rectangle around the response area
+  g.setColour(Colours::orange);                                // set the colour to orange
+  g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f); // draw a rounded rectangle around the response area
 
   g.setColour(Colours::white);                      // set the colour to white
   g.strokePath(responseCurve, PathStrokeType(2.f)); // stroke the path with a width of 2 pixels
 }
 
+void ResponseCurveComponent::resized()
+{
+  // make new backgroubnd image based on width/height of component
+  using namespace juce;
+  background = Image(Image::PixelFormat::ARGB, getWidth(), getHeight(), true); // create a new image for the background
+
+  Graphics g(background); // create a graphics context for the image
+
+  // draw frequency lines
+  Array<float> freqs{
+      20, 30, 40, 50, 100,
+      200, 300, 400, 500, 1000,
+      2000, 3000, 4000, 5000, 10000,
+      20000};
+
+  auto renderArea = getRenderArea();    // get the render area for the response curve component
+  auto left = renderArea.getX();        // get the left edge of the render area
+  auto right = renderArea.getRight();   // get the right edge of the render area
+  auto top = renderArea.getY();         // get the top edge of the render area
+  auto bottom = renderArea.getBottom(); // get the bottom edge of the render area
+  auto width = renderArea.getWidth();   // get the width of the render area
+
+  Array<float> xs;        // array of x positions for the frequency lines
+  for (auto freq : freqs) // iterate through the frequencies
+  {
+    auto normX = mapFromLog10(freq, 20.f, 20000.f); // map the frequency to a value between 0 and 1
+    xs.add(left + width * normX);                   // add the x position to the array
+  }
+
+  g.setColour(Colours::dimgrey); // set the colour to dimgrey
+  for (auto x : xs)              // iterate through the x positions
+  {
+    g.drawVerticalLine(x, top, bottom); // draw a vertical line at the x position
+  }
+
+  // draw gain lines
+  Array<float> gains{
+      -24, -12, 0, 12, 24}; // array of gain values
+
+  for (auto gDb : gains) // iterate through the gain values
+  {
+    auto y = jmap(gDb, -24.f, 24.f, (float)bottom, (float)top);      // map the gain value to a y position
+    g.setColour(gDb == 0.f ? Colours::lightblue : Colours::dimgrey); // set the colour to lightblue if the gain value is 0, otherwise dimgrey
+    g.drawHorizontalLine(y, left, right);                            // draw a horizontal line at the y position
+  }
+
+  // g.drawRect(getAnalysisArea()); // draw a rectangle around the analysis area
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
+{
+  auto bounds = getLocalBounds(); // get the bounds of the response area
+  // bounds.reduce(
+  //     10, // JUCE_LIVE_CONSTANT(5),
+  //     8   // JUCE_LIVE_CONSTANT(5)
+  // );
+  bounds.removeFromTop(12);   // remove the top 12 pixels from the bounds for spacing
+  bounds.removeFromBottom(2); // remove the bottom 2 pixels from the bounds for spacing
+  bounds.removeFromLeft(20);  // remove the left 20 pixels from the bounds for spacing
+  bounds.removeFromRight(20); // remove the right 20 pixels from the bounds for spacing
+  return bounds;              // return the bounds of the response area
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
+{
+  auto bounds = getRenderArea(); // get the bounds of the response area
+  bounds.removeFromTop(4);       // remove the top 4 pixels from the bounds for spacing
+  bounds.removeFromBottom(4);    // remove the bottom 4 pixels from the bounds for spacing
+  return bounds;                 // return the bounds of the response area
+}
 ResponseCurveComponent::~ResponseCurveComponent()
 {
   // de-register as a listener
