@@ -68,10 +68,10 @@ void RotarySliderWithLabels::paint(juce::Graphics &g)
 
   auto sliderBounds = getSliderBounds(); // get the bounds of the slider
 
-  g.setColour(Colours::lightblue); // set the colour to light blue
-  g.drawRect(getLocalBounds());    // draw the rectangle around the slider
-  g.setColour(Colours::yellow);    // set the colour to yellow
-  g.drawRect(sliderBounds);        // draw the rectangle around the slider bounds
+  // g.setColour(Colours::lightblue); // set the colour to light blue
+  // g.drawRect(getLocalBounds());    // draw the rectangle around the slider
+  // g.setColour(Colours::yellow);    // set the colour to yellow
+  // g.drawRect(sliderBounds);        // draw the rectangle around the slider bounds
 
   getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(),
                                     jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0), startAng, endAng, *this); // draw the rotary slider
@@ -91,7 +91,40 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 
 juce::String RotarySliderWithLabels::getDisplayString() const
 {
-  return juce::String(getValue()); // return the value of the slider as a string
+  if (auto choiceParam = dynamic_cast<juce::AudioParameterChoice *>(param))
+  {
+    return choiceParam->getCurrentChoiceName(); // get the current choice name for the parameter
+  }
+
+  juce::String str;  // create a string for the parameter value
+  bool addK = false; // flag to indicate if the suffix should be added
+
+  if (auto *floatParam = dynamic_cast<juce::AudioParameterFloat *>(param))
+  {
+    float val = getValue(); // get the value of the parameter
+
+    if (val > 999.f)
+    {
+      val /= 1000.f; // divide the value by 1000 if it is greater than 999
+      addK = true;   // set the flag to true to indicate that the suffix should be added
+    }
+
+    str = juce::String(val, (addK ? 2 : 0)); // convert the value to a string with 2 decimal places if the suffix is added, otherwise 0 decimal places
+  }
+  else
+  {
+    jassertfalse; // this shouldnt happen
+  }
+
+  if (suffix.isNotEmpty())
+  {
+    str << " "; // add a space to the string
+    if (addK)
+      str << "k"; // add the suffix "k" if the flag is set
+
+    str << suffix; // add the suffix to the string
+  }
+  return str; // return the string
 }
 
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p)
