@@ -351,6 +351,28 @@ void ResponseCurveComponent::resized()
 
     g.drawFittedText(str, r, Justification::centred, 1); // draw the string in the rectangle
   }
+
+  // loop through gains and draw the gain labels
+  for (auto gDb : gains) // iterate through the gain values
+  {
+    auto y = jmap(gDb, -24.f, 24.f, (float)bottom, (float)top); // map the gain value to a y position
+    String str;
+    if (gDb > 0)  // check if the gain value is greater than 0
+      str << "+"; // add a plus sign to the string
+
+    str << gDb; // add the gain value to the string
+
+    auto textWidth = g.getCurrentFont().getStringWidth(str); // get the width of the string
+
+    Rectangle<int> r;                 // create a rectangle for the string
+    r.setSize(textWidth, fontHeight); // set the size of the rectangle to the width and height of the string
+    r.setX(getWidth() - textWidth);   // set the x position of the rectangle to the right edge of the response area
+    r.setCentre(r.getCentreX(), y);   // set the center of the rectangle to the x position and y position
+
+    g.setColour(gDb == 0.f ? Colours::lightblue : Colours::lightgrey); // set the colour to lightblue if the gain value is 0, otherwise lightgrey
+
+    g.drawFittedText(str, r, Justification::centred, 1); // draw the string in the rectangle
+  }
 }
 
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
