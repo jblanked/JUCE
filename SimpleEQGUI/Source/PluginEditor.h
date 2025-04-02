@@ -15,7 +15,7 @@ struct LookAndFeel : juce::LookAndFeel_V4
 {
   void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
                         float sliderPosProportional, float rotaryStartAngle,
-                        float rotaryEndAngle, juce::Slider &slider) override {}
+                        float rotaryEndAngle, juce::Slider &slider) override;
 };
 
 struct RotarySliderWithLabels : juce::Slider
@@ -32,7 +32,7 @@ struct RotarySliderWithLabels : juce::Slider
     setLookAndFeel(nullptr); // reset the look and feel to the default
   }
 
-  void paint(juce::Graphics &g) override {}
+  void paint(juce::Graphics &g) override;
   juce::Rectangle<int> getSliderBounds() const;
   int getTextHeight() const { return 14; } // height of the text label
   juce::String getDisplayString() const;
@@ -78,7 +78,7 @@ private:
   // access the processor object that created it.
   SimpleEQAudioProcessor &audioProcessor;
 
-    RotarySliderWithLabels peakFreqSlider,
+  RotarySliderWithLabels peakFreqSlider,
       peakGainSlider,
       peakQualitySlider,
       lowCutFreqSlider,
