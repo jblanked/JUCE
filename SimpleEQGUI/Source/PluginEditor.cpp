@@ -68,11 +68,6 @@ void RotarySliderWithLabels::paint(juce::Graphics &g)
 
   auto sliderBounds = getSliderBounds(); // get the bounds of the slider
 
-  // g.setColour(Colours::lightblue); // set the colour to light blue
-  // g.drawRect(getLocalBounds());    // draw the rectangle around the slider
-  // g.setColour(Colours::yellow);    // set the colour to yellow
-  // g.drawRect(sliderBounds);        // draw the rectangle around the slider bounds
-
   getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(),
                                     jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0), startAng, endAng, *this); // draw the rotary slider
 
@@ -364,13 +359,20 @@ void ResponseCurveComponent::resized()
 
     auto textWidth = g.getCurrentFont().getStringWidth(str); // get the width of the string
 
-    Rectangle<int> r;                 // create a rectangle for the string
-    r.setSize(textWidth, fontHeight); // set the size of the rectangle to the width and height of the string
-    r.setX(getWidth() - textWidth);   // set the x position of the rectangle to the right edge of the response area
-    r.setCentre(r.getCentreX(), y);   // set the center of the rectangle to the x position and y position
-
+    Rectangle<int> r;                                                  // create a rectangle for the string
+    r.setSize(textWidth, fontHeight);                                  // set the size of the rectangle to the width and height of the string
+    r.setX(getWidth() - textWidth);                                    // set the x position of the rectangle to the right edge of the response area
+    r.setCentre(r.getCentreX(), y);                                    // set the center of the rectangle to the x position and y position
     g.setColour(gDb == 0.f ? Colours::lightblue : Colours::lightgrey); // set the colour to lightblue if the gain value is 0, otherwise lightgrey
+    g.drawFittedText(str, r, Justification::centred, 1);               // draw the string in the rectangle
 
+    str.clear();
+    str << (gDb - 24.f); // add the gain value to the string
+
+    r.setX(1);
+    textWidth = g.getCurrentFont().getStringWidth(str);  // get the width of the string
+    r.setSize(textWidth, fontHeight);                    // set the size of the rectangle to the width and height of the string
+    g.setColour(Colours::lightgrey);                     // set the colour to light grey
     g.drawFittedText(str, r, Justification::centred, 1); // draw the string in the rectangle
   }
 }
@@ -378,12 +380,9 @@ void ResponseCurveComponent::resized()
 juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 {
   auto bounds = getLocalBounds(); // get the bounds of the response area
-  // bounds.reduce(
-  //     10, // JUCE_LIVE_CONSTANT(5),
-  //     8   // JUCE_LIVE_CONSTANT(5)
-  // );
-  bounds.removeFromTop(12);   // remove the top 12 pixels from the bounds for spacing
-  bounds.removeFromBottom(2); // remove the bottom 2 pixels from the bounds for spacing
+
+  bounds.removeFromTop(14);   // remove the top 14 pixels from the bounds for spacing
+  bounds.removeFromBottom(4); // remove the bottom 4 pixels from the bounds for spacing
   bounds.removeFromLeft(20);  // remove the left 20 pixels from the bounds for spacing
   bounds.removeFromRight(20); // remove the right 20 pixels from the bounds for spacing
   return bounds;              // return the bounds of the response area
