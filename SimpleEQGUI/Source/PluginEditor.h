@@ -66,6 +66,8 @@ private:
   SimpleEQAudioProcessor &audioProcessor;
   juce::Atomic<bool> parametersChanged{false}; // atomic flag to indicate if the parameters have changed
   MonoChain monoChain;                         // chain to hold the filter coefficients
+
+  void updateChain(); // update the chain with the new parameters
 };
 
 //==============================================================================
