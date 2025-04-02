@@ -32,6 +32,14 @@ struct RotarySliderWithLabels : juce::Slider
     setLookAndFeel(nullptr); // reset the look and feel to the default
   }
 
+  struct LabelPos
+  {
+    float pos;          // position of the label
+    juce::String label; // label text
+  };
+
+  juce::Array<LabelPos> labels; // array of labels for the slider
+
   void paint(juce::Graphics &g) override;
   juce::Rectangle<int> getSliderBounds() const;
   int getTextHeight() const { return 14; } // height of the text label

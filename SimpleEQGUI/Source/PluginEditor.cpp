@@ -19,7 +19,7 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
   g.setColour(Colours::darkgrey);                      // set the colour to dark grey
   g.fillEllipse(bounds);                               // fill the ellipse with the colour
 
-  g.setColour(Colours::lightblue); // set the colour to blue
+  g.setColour(Colours::lightblue); // set the colour to light blue
   g.drawEllipse(bounds, 1.f);      // draw the ellipse with a width of 1 pixel
 
   if (auto *rswl = dynamic_cast<RotarySliderWithLabels *>(&slider))
@@ -75,6 +75,31 @@ void RotarySliderWithLabels::paint(juce::Graphics &g)
 
   getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(),
                                     jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0), startAng, endAng, *this); // draw the rotary slider
+
+  auto center = sliderBounds.toFloat().getCentre(); // get the center of the slider bounds
+  auto radius = sliderBounds.getWidth() * 0.5f;     // get the radius of the slider
+
+  g.setColour(Colours::lightblue); // set the colour to light blue
+  g.setFont(getTextHeight());      // set the font size to the height of the text label
+
+  auto numChoices = labels.size();     // get the number of labels for the slider
+  for (int i = 0; i < numChoices; ++i) // iterate through the labels
+  {
+    auto pos = labels[i].pos;          // get the position of the label
+    jassert(0.f <= pos && pos <= 1.f); // check that the position is between 0 and 1
+
+    auto ang = jmap(pos, 0.f, 1.f, static_cast<float>(startAng), static_cast<float>(endAng)); // map the position to the angle of the label
+
+    auto c = center.getPointOnCircumference(radius + getTextHeight() * 0.5f + 1, ang); // get the point on the circumference of the circle for the label
+
+    Rectangle<float> r;                                                 // create a rectangle for the label
+    auto str = labels[i].label;                                         // get the label text
+    r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight()); // set the size of the rectangle to the width and height of the text label
+    r.setCentre(c);                                                     // set the center of the rectangle to the point on the circumference
+    r.setY(r.getY() + getTextHeight());                                 // set the y position of the rectangle to the height of the text label
+
+    g.drawFittedText(str, r.toNearestInt(), Justification::centred, 1); // draw the text label in the rectangle
+  }
 }
 
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
@@ -274,6 +299,11 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
       lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
       highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider)
 {
+  // Make sure that before the constructor has finished, you've set the
+  // editor's size to whatever you need it to be.
+
+  peakFreqSlider.labels.add({0.f, "20Hz"});  // add a label to the peak frequency slider
+  peakFreqSlider.labels.add({1.f, "20kHz"}); // add a label to the peak frequency slider
 
   for (auto *comp : getComps())
   {
