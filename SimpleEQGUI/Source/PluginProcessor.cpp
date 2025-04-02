@@ -118,6 +118,8 @@ void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
     // prepare our fifos
     leftChannelFifo.prepare(samplesPerBlock);  // prepare the left channel fifo
     rightChannelFifo.prepare(samplesPerBlock); // prepare the right channel fifo
+
+    spec.numChannels = getTotalNumOutputChannels(); // set the number of channels to the number of output channels
 }
 
 void SimpleEQAudioProcessor::releaseResources()

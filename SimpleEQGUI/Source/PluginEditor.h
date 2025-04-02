@@ -179,6 +179,30 @@ private:
   juce::String suffix;               // suffix for the parameter value
 };
 
+struct PathProducer
+{
+  PathProducer(SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType> &scsf) : leftChannelFifo(&scsf)
+  {
+    // split audio spectrum from 20Hz to 20kHz into FFTOrder bins, which store the magnitude level of a range of frequencies
+    leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048); // change the order of the FFT data generator to 2048
+
+    // initialize mono buffer with proper size
+    monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize()); // set the size of the mono buffer to the size of the FFT data generator
+  }
+  void process(juce::Rectangle<float> fftBounds, double sampleRate);
+  juce::Path getPath() const { return leftChannelFFTPath; } // get the path for the left channel FFT data
+private:
+  SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType> *leftChannelFifo;
+
+  juce::AudioBuffer<float> monoBuffer;
+
+  FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator; // FFT data generator for the left channel
+
+  AnalyzerPathGenerator<juce::Path> pathProducer; // path generator for the analyzer
+
+  juce::Path leftChannelFFTPath; // path for the left channel FFT data
+};
+
 struct ResponseCurveComponent : public juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
 {
   ResponseCurveComponent(SimpleEQAudioProcessor &);
@@ -204,15 +228,7 @@ private:
 
   juce::Rectangle<int> getAnalysisArea(); // get the analysis area for the response curve component
 
-  SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType> *leftChannelFifo;
-
-  juce::AudioBuffer<float> monoBuffer;
-
-  FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator; // FFT data generator for the left channel
-
-  AnalyzerPathGenerator<juce::Path> pathProducer; // path generator for the analyzer
-
-  juce::Path leftChannelFFTPath; // path for the left channel FFT data
+  PathProducer leftPathProducer, rightPathProducer; // path producers for the left and right channels
 };
 
 //==============================================================================

@@ -147,8 +147,7 @@ juce::String RotarySliderWithLabels::getDisplayString() const
   return str; // return the string
 }
 
-ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p),
-                                                                            leftChannelFifo(&audioProcessor.leftChannelFifo)
+ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audioProcessor(p), leftPathProducer(audioProcessor.leftChannelFifo), rightPathProducer(audioProcessor.rightChannelFifo)
 {
   // listen for parameter changes
   const auto &params = audioProcessor.getParameters(); // get the parameters from the audio processor
@@ -156,12 +155,6 @@ ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor &p) : audi
   {
     param->addListener(this); // add the editor as a listener to each parameter
   }
-
-  // split audio spectrum from 20Hz to 20kHz into FFTOrder bins, which store the magnitude level of a range of frequencies
-  leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048); // change the order of the FFT data generator to 2048
-
-  // initialize mono buffer with proper size
-  monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize()); // set the size of the mono buffer to the size of the FFT data generator
 
   updateChain(); // update the chain with the initial parameters
 
@@ -173,7 +166,7 @@ void ResponseCurveComponent::parameterValueChanged(int parameterIndex, float new
   parametersChanged.set(true); // set the atomic flag to true to indicate that the parameters have changed
 }
 
-void ResponseCurveComponent::timerCallback()
+void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
 {
   // while there are buffers to pull, if we can pull a buffer, send to FFT data generator
   juce::AudioBuffer<float> tempIncomingBuffer;
@@ -204,24 +197,31 @@ void ResponseCurveComponent::timerCallback()
   }
 
   // while there are FFT data buffers to pull, if we can pull a buffer,generate the path
-  const auto bounds = getAnalysisArea().toFloat();                        // get the bounds of the analysis area
-  const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();          // get the size of the FFT data generator
-  const auto binWidth = audioProcessor.getSampleRate() / (double)fftSize; // get the bin width of the FFT data generator
+  const auto fftSize = leftChannelFFTDataGenerator.getFFTSize(); // get the size of the FFT data generator
+  const auto binWidth = sampleRate / (double)fftSize;            // get the bin width of the FFT data generator
 
   while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
   {
     std::vector<float> fftData; // create a vector for the FFT data
     if (leftChannelFFTDataGenerator.getFFTData(fftData))
     {
-      pathProducer.generatePath(fftData, bounds, fftSize, binWidth, -48.f); // generate the path for the FFT data
+      pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.f); // generate the path for the FFT data
     }
   }
-
   // while there are paths to pull, pull as many as we can, display the most recent path
   while (pathProducer.getNumPathsAvailable() > 0)
   {
     pathProducer.getPath(leftChannelFFTPath); // get the path for the left channel FFT data
   }
+}
+
+void ResponseCurveComponent::timerCallback()
+{
+  auto fftBounds = getAnalysisArea().toFloat();     // get the analysis area for the response curve component
+  auto sampleRate = audioProcessor.getSampleRate(); // get the sample rate of the audio processor
+
+  leftPathProducer.process(fftBounds, sampleRate);  // process the left channel FFT data
+  rightPathProducer.process(fftBounds, sampleRate); // process the right channel FFT data
 
   // check if the parameters have changed
   if (parametersChanged.compareAndSetBool(false, true))
@@ -320,11 +320,19 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     responseCurve.lineTo(responseArea.getX() + i, map(mags[i])); // add a line to the path for each magnitude value
   }
 
+  auto leftChannelFFTPath = leftPathProducer.getPath();                                                       // get the path for the left channel FFT data
   leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
 
   // draw the path
   g.setColour(Colours::lightblue);                       // set the colour to lightblue
   g.strokePath(leftChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
+
+  auto rightChannelFFTPath = rightPathProducer.getPath();                                                      // get the path for the right channel FFT data
+  rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
+
+  // draw the path
+  g.setColour(Colours::lightyellow);                      // set the colour to lightyellow
+  g.strokePath(rightChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
 
   g.setColour(Colours::orange);                                // set the colour to orange
   g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f); // draw a rounded rectangle around the response area
