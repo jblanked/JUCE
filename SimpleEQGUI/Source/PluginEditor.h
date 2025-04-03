@@ -217,6 +217,11 @@ struct ResponseCurveComponent : public juce::Component, juce::AudioProcessorPara
   void paint(juce::Graphics &g) override;
   void resized() override;
   void toggleAnalyzerEnabled(bool enabled) { shouldShowFFTAnalysis = enabled; } // toggle the analyzer enabled state
+  void drawTextLabels(juce::Graphics &g);
+  std::vector<float> getXs(const std::vector<float> &freqs, float left, float width);
+  std::vector<float> getGains();
+  std::vector<float> getFrequencies();
+
 private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
