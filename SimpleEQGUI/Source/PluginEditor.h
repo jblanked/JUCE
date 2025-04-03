@@ -235,6 +235,34 @@ private:
   PathProducer leftPathProducer, rightPathProducer; // path producers for the left and right channels
 };
 
+struct PowerButton : juce::ToggleButton
+{
+};
+
+struct AnalyzerButton : juce::ToggleButton
+{
+  void resized() override
+  {
+    auto bounds = getLocalBounds();
+    auto insetRect = bounds.reduced(4);
+
+    randomPath.clear();
+
+    juce::Random r;
+
+    randomPath.startNewSubPath(insetRect.getX(),
+                               insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+
+    for (auto x = insetRect.getX() + 1; x < insetRect.getRight(); x += 2)
+    {
+      randomPath.lineTo(x,
+                        insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+    }
+  }
+
+  juce::Path randomPath;
+};
+
 //==============================================================================
 /**
  */
@@ -276,7 +304,9 @@ private:
 
   ResponseCurveComponent responseCurveComponent; // component to show the frequency response of the EQ
 
-  juce::ToggleButton lowCutBypassButton, peakBypassButton, highCutBypassButton, analyzerEnabledButton; // bypass buttons for the filters
+  PowerButton lowCutBypassButton, peakBypassButton, highCutBypassButton; // bypass buttons for the filters
+
+  AnalyzerButton analyzerEnabledButton; // button to enable/disable the analyzer
 
   using ButtonAttachment = APVTS::ButtonAttachment; // typename alias to help with readability of the function
   ButtonAttachment lowCutBypassButtonAttachment,

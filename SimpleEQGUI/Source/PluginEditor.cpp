@@ -57,41 +57,57 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
   }
 }
 
-void LookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button,
+void LookAndFeel::drawToggleButton(juce::Graphics &g,
+                                   juce::ToggleButton &toggleButton,
                                    bool shouldDrawButtonAsHighlighted,
                                    bool shouldDrawButtonAsDown)
 {
   using namespace juce;
 
-  Path powerButton; // create a path for the power button
+  if (auto *pb = dynamic_cast<PowerButton *>(&toggleButton)) // check if the button is a power button
+  {
+    Path powerButton; // create a path for the power button
 
-  auto bounds = button.getLocalBounds();                       // get the bounds of the button
-  auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6; // get the size of the button
-  auto r = bounds.withSizeKeepingCentre(size, size).toFloat(); // create a rectangle for the button
+    auto bounds = toggleButton.getLocalBounds(); // get the bounds of the button
 
-  float ang = 30.f;
+    auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6; // get the size of the button
+    auto r = bounds.withSizeKeepingCentre(size, size).toFloat(); // create a rectangle for the button
 
-  size -= 6; // subtract 6 pixels from the size of the button
+    float ang = 30.f; // 30.f;
 
-  // make arc
-  powerButton.addCentredArc(
-      r.getCentreX(),
-      r.getCentreY(),
-      size * 0.5,
-      size * 0.5,
-      0.f,
-      degreesToRadians(ang),
-      degreesToRadians(360.f - ang),
-      true); // add an arc to the path for the button
+    size -= 6;
 
-  powerButton.startNewSubPath(r.getCentreX(), r.getY()); // start a new subpath for the button
-  powerButton.lineTo(r.getCentre());                    // add a line to the path for the button
+    powerButton.addCentredArc(r.getCentreX(),
+                              r.getCentreY(),
+                              size * 0.5,
+                              size * 0.5,
+                              0.f,
+                              degreesToRadians(ang),
+                              degreesToRadians(360.f - ang),
+                              true); // create an arc for the button
 
-  PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);                   // create a stroke type for the path
-  auto color = button.getToggleState() ? Colours::lightblue : Colours::darkgrey; // set the colour of the button based on the toggle state
-  g.setColour(color);                                                            // set the colour of the button
-  g.strokePath(powerButton, pst);                                                // stroke the path with the colour
-  g.drawEllipse(r, 2);                                                           // draw the ellipse for the button
+    powerButton.startNewSubPath(r.getCentreX(), r.getY()); // start a new subpath at the top of the button
+    powerButton.lineTo(r.getCentre());                     // draw a line to the center of the button
+
+    PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved); // set the stroke type for the path
+
+    auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colours::lightblue;
+
+    g.setColour(color);
+    g.strokePath(powerButton, pst);
+    g.drawEllipse(r, 2);
+  }
+  else if (auto *analyzerButton = dynamic_cast<AnalyzerButton *>(&toggleButton)) // check if the button is an analyzer button
+  {
+    auto color = !toggleButton.getToggleState() ? Colours::dimgrey : Colours::lightblue;
+
+    g.setColour(color);
+
+    auto bounds = toggleButton.getLocalBounds(); // get the bounds of the button
+    g.drawRect(bounds);
+
+    g.strokePath(analyzerButton->randomPath, PathStrokeType(1.f)); // draw the path for the button
+  }
 }
 
 void RotarySliderWithLabels::paint(juce::Graphics &g)
@@ -578,9 +594,10 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
     addAndMakeVisible(comp); // add the components to the editor
   }
 
-  peakBypassButton.setLookAndFeel(&lnf);    // set the look and feel of the peak bypass button
-  lowCutBypassButton.setLookAndFeel(&lnf);  // set the look and feel of the low cut bypass button
-  highCutBypassButton.setLookAndFeel(&lnf); // set the look and feel of the high cut bypass button
+  peakBypassButton.setLookAndFeel(&lnf);      // set the look and feel of the peak bypass button
+  lowCutBypassButton.setLookAndFeel(&lnf);    // set the look and feel of the low cut bypass button
+  highCutBypassButton.setLookAndFeel(&lnf);   // set the look and feel of the high cut bypass button
+  analyzerEnabledButton.setLookAndFeel(&lnf); // set the look and feel of the analyzer enabled button
 
   setSize(600, 480); // size of the editor window
 }
@@ -589,9 +606,10 @@ SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
   // This will be deleted by the compiler automatically, but you can do it here
   // if you want to be explicit about it.
-  peakBypassButton.setLookAndFeel(nullptr);    // set the look and feel of the peak bypass button to nullptr
-  lowCutBypassButton.setLookAndFeel(nullptr);  // set the look and feel of the low cut bypass button to nullptr
-  highCutBypassButton.setLookAndFeel(nullptr); // set the look and feel of the high cut bypass button to nullptr
+  peakBypassButton.setLookAndFeel(nullptr);      // set the look and feel of the peak bypass button to nullptr
+  lowCutBypassButton.setLookAndFeel(nullptr);    // set the look and feel of the low cut bypass button to nullptr
+  highCutBypassButton.setLookAndFeel(nullptr);   // set the look and feel of the high cut bypass button to nullptr
+  analyzerEnabledButton.setLookAndFeel(nullptr); // set the look and feel of the analyzer enabled button to nullptr
 }
 
 //==============================================================================
@@ -608,7 +626,16 @@ void SimpleEQAudioProcessorEditor::resized()
   // subcomponents in your editor..
 
   // first 3rd of the display for showing the frequency response of the EQ
-  auto bounds = getLocalBounds();                                        // bounding box of the editor window
+  auto bounds = getLocalBounds(); // bounding box of the editor window
+
+  auto analyzerEnabledArea = bounds.removeFromTop(25);
+
+  analyzerEnabledArea.setWidth(50);
+  analyzerEnabledArea.setX(5);
+  analyzerEnabledArea.removeFromTop(2);
+
+  analyzerEnabledButton.setBounds(analyzerEnabledArea); // set the bounds of the analyzer enabled button
+
   float hRatio = 25.f / 100.f;                                           // JUCE_LIVE_CONSTANT(33) / 100.f;                      // height ratio of the response area
   auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio); // remove the top 1/3 of the display for showing the frequency response
 
