@@ -235,7 +235,13 @@ void ResponseCurveComponent::timerCallback()
 void ResponseCurveComponent::updateChain()
 {
   // update the chain with the new parameters
-  auto chainSettings = getChainSettings(audioProcessor.apvts);                              // get the chain settings from the apvts
+  auto chainSettings = getChainSettings(audioProcessor.apvts); // get the chain settings from the apvts
+
+  // update bypass states
+  monoChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);   // set the low cut filter to bypassed or not
+  monoChain.setBypassed<ChainPositions::Peak>(chainSettings.peakBypassed);       // set the peak filter to bypassed or not
+  monoChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed); // set the high cut filter to bypassed or not
+
   auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());    // create the peak filter coefficients
   updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients); // set the coefficients for the peak filter
 
@@ -279,24 +285,28 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     if (!monoChain.isBypassed<ChainPositions::Peak>())
       mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the peak filter for that frequency
 
-    if (!lowcut.isBypassed<0>())
-      mag *= lowcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
-    if (!lowcut.isBypassed<1>())
-      mag *= lowcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
-    if (!lowcut.isBypassed<2>())
-      mag *= lowcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
-    if (!lowcut.isBypassed<3>())
-      mag *= lowcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
-
-    if (!highcut.isBypassed<0>())
-      mag *= highcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
-    if (!highcut.isBypassed<1>())
-      mag *= highcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
-    if (!highcut.isBypassed<2>())
-      mag *= highcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
-    if (!highcut.isBypassed<3>())
-      mag *= highcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
-
+    if (!monoChain.isBypassed<ChainPositions::LowCut>())
+    {
+      if (!lowcut.isBypassed<0>())
+        mag *= lowcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
+      if (!lowcut.isBypassed<1>())
+        mag *= lowcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
+      if (!lowcut.isBypassed<2>())
+        mag *= lowcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
+      if (!lowcut.isBypassed<3>())
+        mag *= lowcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the low cut filter for that frequency
+    }
+    if (!monoChain.isBypassed<ChainPositions::HighCut>())
+    {
+      if (!highcut.isBypassed<0>())
+        mag *= highcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
+      if (!highcut.isBypassed<1>())
+        mag *= highcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
+      if (!highcut.isBypassed<2>())
+        mag *= highcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
+      if (!highcut.isBypassed<3>())
+        mag *= highcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate); // get the magnitude of the high cut filter for that frequency
+    }
     mags[i] = Decibels::gainToDecibels(mag); // convert the magnitude to decibels and store it in the vector
   }
 
@@ -495,7 +505,12 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
       lowCutFreqSliderAttachment(audioProcessor.apvts, "lowCutFrequency", lowCutFreqSlider),
       highCutFreqSliderAttachment(audioProcessor.apvts, "highCutFrequency", highCutFreqSlider),
       lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
-      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider)
+      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider),
+      //
+      lowCutBypassButtonAttachment(audioProcessor.apvts, "lowCutBypass", lowCutBypassButton),
+      peakBypassButtonAttachment(audioProcessor.apvts, "peakBypass", peakBypassButton),
+      highCutBypassButtonAttachment(audioProcessor.apvts, "highCutBypass", highCutBypassButton),
+      analyzerEnabledButtonAttachment(audioProcessor.apvts, "analyzerEnabled", analyzerEnabledButton)
 {
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
@@ -559,12 +574,15 @@ void SimpleEQAudioProcessorEditor::resized()
   auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);  // remove the left half of the display for showing the low cut filter
   auto highCutArea = bounds.removeFromRight(bounds.getWidth() * 0.5); // remove the right half of the display for showing the high cut filter
 
+  lowCutBypassButton.setBounds(lowCutArea.removeFromTop(25));                         // set the bounds of the low cut bypass button
   lowCutFreqSlider.setBounds(lowCutArea.removeFromTop(lowCutArea.getHeight() * 0.5)); // set the bounds of the low cut filter slider
   lowCutSlopeSlider.setBounds(lowCutArea);                                            // set the bounds of the low cut filter slope slider
 
+  highCutBypassButton.setBounds(highCutArea.removeFromTop(25));                          // set the bounds of the high cut bypass button
   highCutFreqSlider.setBounds(highCutArea.removeFromTop(highCutArea.getHeight() * 0.5)); // set the bounds of the high cut filter slider
   highCutSlopeSlider.setBounds(highCutArea);                                             // set the bounds of the high cut filter slope slider
 
+  peakBypassButton.setBounds(bounds.removeFromTop(25));                      // set the bounds of the peak bypass button
   peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.33)); // set the bounds of the peak frequency slider
   peakGainSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));  // set the bounds of the peak gain slider
   peakQualitySlider.setBounds(bounds);                                       // set the bounds of the peak quality slider
@@ -581,5 +599,10 @@ std::vector<juce::Component *> SimpleEQAudioProcessorEditor::getComps()
       &lowCutSlopeSlider,
       &highCutSlopeSlider,
       &responseCurveComponent,
+      &lowCutBypassButton,
+      &peakBypassButton,
+      &highCutBypassButton,
+      &analyzerEnabledButton
+
   };
 }

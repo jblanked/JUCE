@@ -272,6 +272,14 @@ private:
 
   ResponseCurveComponent responseCurveComponent; // component to show the frequency response of the EQ
 
+  juce::ToggleButton lowCutBypassButton, peakBypassButton, highCutBypassButton, analyzerEnabledButton; // bypass buttons for the filters
+
+  using ButtonAttachment = APVTS::ButtonAttachment; // typename alias to help with readability of the function
+  ButtonAttachment lowCutBypassButtonAttachment,
+      peakBypassButtonAttachment,
+      highCutBypassButtonAttachment,
+      analyzerEnabledButtonAttachment; // declare an attachment for each button
+
   std::vector<juce::Component *> getComps();
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessorEditor)

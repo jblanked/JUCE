@@ -160,6 +160,7 @@ struct ChainSettings
   float peakFreq{0}, peakGainInDecibels{0}, peakQuality{1};
   float lowCutFreq{0}, highCutFreq{0};
   Slope lowCutSlope{Slope_12}, highCutSlope{Slope_12};
+  bool lowCutBypassed{false}, peakBypassed{false}, highCutBypassed{false};
 };
 
 // helper funciton that will give us all of the values in the struct
