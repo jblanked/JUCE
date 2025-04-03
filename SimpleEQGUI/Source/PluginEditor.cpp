@@ -57,6 +57,43 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
   }
 }
 
+void LookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button,
+                                   bool shouldDrawButtonAsHighlighted,
+                                   bool shouldDrawButtonAsDown)
+{
+  using namespace juce;
+
+  Path powerButton; // create a path for the power button
+
+  auto bounds = button.getLocalBounds();                       // get the bounds of the button
+  auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6; // get the size of the button
+  auto r = bounds.withSizeKeepingCentre(size, size).toFloat(); // create a rectangle for the button
+
+  float ang = 30.f;
+
+  size -= 6; // subtract 6 pixels from the size of the button
+
+  // make arc
+  powerButton.addCentredArc(
+      r.getCentreX(),
+      r.getCentreY(),
+      size * 0.5,
+      size * 0.5,
+      0.f,
+      degreesToRadians(ang),
+      degreesToRadians(360.f - ang),
+      true); // add an arc to the path for the button
+
+  powerButton.startNewSubPath(r.getCentreX(), r.getY()); // start a new subpath for the button
+  powerButton.lineTo(r.getCentre());                    // add a line to the path for the button
+
+  PathStrokeType pst(2.f, PathStrokeType::JointStyle::curved);                   // create a stroke type for the path
+  auto color = button.getToggleState() ? Colours::lightblue : Colours::darkgrey; // set the colour of the button based on the toggle state
+  g.setColour(color);                                                            // set the colour of the button
+  g.strokePath(powerButton, pst);                                                // stroke the path with the colour
+  g.drawEllipse(r, 2);                                                           // draw the ellipse for the button
+}
+
 void RotarySliderWithLabels::paint(juce::Graphics &g)
 {
   using namespace juce;
@@ -541,11 +578,20 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
     addAndMakeVisible(comp); // add the components to the editor
   }
 
+  peakBypassButton.setLookAndFeel(&lnf);    // set the look and feel of the peak bypass button
+  lowCutBypassButton.setLookAndFeel(&lnf);  // set the look and feel of the low cut bypass button
+  highCutBypassButton.setLookAndFeel(&lnf); // set the look and feel of the high cut bypass button
+
   setSize(600, 480); // size of the editor window
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
+  // This will be deleted by the compiler automatically, but you can do it here
+  // if you want to be explicit about it.
+  peakBypassButton.setLookAndFeel(nullptr);    // set the look and feel of the peak bypass button to nullptr
+  lowCutBypassButton.setLookAndFeel(nullptr);  // set the look and feel of the low cut bypass button to nullptr
+  highCutBypassButton.setLookAndFeel(nullptr); // set the look and feel of the high cut bypass button to nullptr
 }
 
 //==============================================================================
