@@ -257,9 +257,12 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts)
 
 Coefficients makePeakFilter(const ChainSettings &chainSettings, double sampleRate)
 {
+    auto gain = juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels);
+    if (std::abs(gain - 1.0f) < 1e-5f)
+        gain = 1.0f;
     return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
                                                                chainSettings.peakFreq,
-                                                               juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels),
+                                                               gain,
                                                                chainSettings.peakQuality); // create the peak filter coefficients
 }
 
@@ -333,7 +336,7 @@ SimpleEQAudioProcessor::createParameterLayout()
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakFrequency", 3), "Peak Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 750.f));
 
     // add a peak gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakGain", 4), "Peak Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.1f, 1.f), 0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakGain", 4), "Peak Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
 
     // add a peak quality parameter
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakQuality", 5), "Peak Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));

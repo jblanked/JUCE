@@ -216,7 +216,7 @@ struct ResponseCurveComponent : public juce::Component, juce::AudioProcessorPara
   void timerCallback() override; // query atomic flag to decide if the chain needs updating and our components need repainting
   void paint(juce::Graphics &g) override;
   void resized() override;
-
+  void toggleAnalyzerEnabled(bool enabled) { shouldShowFFTAnalysis = enabled; } // toggle the analyzer enabled state
 private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
@@ -233,6 +233,7 @@ private:
   juce::Rectangle<int> getAnalysisArea(); // get the analysis area for the response curve component
 
   PathProducer leftPathProducer, rightPathProducer; // path producers for the left and right channels
+  bool shouldShowFFTAnalysis = false;               // flag to indicate if the analyzer is enabled
 };
 
 struct PowerButton : juce::ToggleButton

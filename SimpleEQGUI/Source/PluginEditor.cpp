@@ -16,11 +16,14 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
   using namespace juce;
 
   auto bounds = Rectangle<float>(x, y, width, height); // create a rectangle for the slider
-  g.setColour(Colours::darkgrey);                      // set the colour to dark grey
-  g.fillEllipse(bounds);                               // fill the ellipse with the colour
 
-  g.setColour(Colours::lightblue); // set the colour to light blue
-  g.drawEllipse(bounds, 1.f);      // draw the ellipse with a width of 1 pixel
+  auto enabled = slider.isEnabled(); // check if the slider is enabled
+
+  g.setColour(enabled ? Colours::grey : Colours::darkgrey); // set the colour based on the enabled state
+  g.fillEllipse(bounds);                                    // fill the ellipse with the colour
+
+  g.setColour(enabled ? Colours::lightblue : Colours::darkgrey); // set the colour based on the enabled state
+  g.drawEllipse(bounds, 1.f);                                    // draw the ellipse with a width of 1 pixel
 
   if (auto *rswl = dynamic_cast<RotarySliderWithLabels *>(&slider))
   {
@@ -49,10 +52,10 @@ void LookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, i
     r.setSize(strWidth + 4, rswl->getTextHeight() + 2); // set the size of the rectangle to the width and height of the text label
     r.setCentre(bounds.getCentre());
 
-    g.setColour(Colours::black); // set the colour to black
-    g.fillRect(r);               // fill the rectangle with the colour
+    g.setColour(enabled ? Colours::grey : Colours::darkgrey);
+    g.fillRect(r); // fill the rectangle with the colour
 
-    g.setColour(Colours::white);                                         // set the colour to white
+    g.setColour(enabled ? Colours::lightblue : Colours::darkgrey);       // set the colour to white
     g.drawFittedText(text, r.toNearestInt(), Justification::centred, 1); // draw the text label in the rectangle
   }
 }
@@ -270,12 +273,14 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
 
 void ResponseCurveComponent::timerCallback()
 {
-  auto fftBounds = getAnalysisArea().toFloat();     // get the analysis area for the response curve component
-  auto sampleRate = audioProcessor.getSampleRate(); // get the sample rate of the audio processor
+  if (shouldShowFFTAnalysis)
+  {
+    auto fftBounds = getAnalysisArea().toFloat();     // get the analysis area for the response curve component
+    auto sampleRate = audioProcessor.getSampleRate(); // get the sample rate of the audio processor
 
-  leftPathProducer.process(fftBounds, sampleRate);  // process the left channel FFT data
-  rightPathProducer.process(fftBounds, sampleRate); // process the right channel FFT data
-
+    leftPathProducer.process(fftBounds, sampleRate);  // process the left channel FFT data
+    rightPathProducer.process(fftBounds, sampleRate); // process the right channel FFT data
+  }
   // check if the parameters have changed
   if (parametersChanged.compareAndSetBool(false, true))
   {
@@ -383,19 +388,22 @@ void ResponseCurveComponent::paint(juce::Graphics &g)
     responseCurve.lineTo(responseArea.getX() + i, map(mags[i])); // add a line to the path for each magnitude value
   }
 
-  auto leftChannelFFTPath = leftPathProducer.getPath();                                                       // get the path for the left channel FFT data
-  leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
+  if (shouldShowFFTAnalysis)
+  {
+    auto leftChannelFFTPath = leftPathProducer.getPath();                                                       // get the path for the left channel FFT data
+    leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
 
-  // draw the path
-  g.setColour(Colours::lightblue);                       // set the colour to lightblue
-  g.strokePath(leftChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
+    // draw the path
+    g.setColour(Colours::lightblue);                       // set the colour to lightblue
+    g.strokePath(leftChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
 
-  auto rightChannelFFTPath = rightPathProducer.getPath();                                                      // get the path for the right channel FFT data
-  rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
+    auto rightChannelFFTPath = rightPathProducer.getPath();                                                      // get the path for the right channel FFT data
+    rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY())); // apply a translation to the path to move it to the response area
 
-  // draw the path
-  g.setColour(Colours::lightyellow);                      // set the colour to lightyellow
-  g.strokePath(rightChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
+    // draw the path
+    g.setColour(Colours::lightyellow);                      // set the colour to lightyellow
+    g.strokePath(rightChannelFFTPath, PathStrokeType(1.f)); // stroke the path with a width of 1 pixel
+  }
 
   g.setColour(Colours::orange);                                // set the colour to orange
   g.drawRoundedRectangle(getRenderArea().toFloat(), 4.f, 1.f); // draw a rounded rectangle around the response area
@@ -598,6 +606,50 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcesso
   lowCutBypassButton.setLookAndFeel(&lnf);    // set the look and feel of the low cut bypass button
   highCutBypassButton.setLookAndFeel(&lnf);   // set the look and feel of the high cut bypass button
   analyzerEnabledButton.setLookAndFeel(&lnf); // set the look and feel of the analyzer enabled button
+
+  auto safePtr = juce::Component::SafePointer<SimpleEQAudioProcessorEditor>(this);
+  peakBypassButton.onClick = [safePtr]()
+  {
+    if (auto *comp = safePtr.getComponent())
+    {
+      auto bypassed = comp->peakBypassButton.getToggleState();
+
+      comp->peakFreqSlider.setEnabled(!bypassed);
+      comp->peakGainSlider.setEnabled(!bypassed);
+      comp->peakQualitySlider.setEnabled(!bypassed);
+    }
+  };
+
+  lowCutBypassButton.onClick = [safePtr]()
+  {
+    if (auto *comp = safePtr.getComponent())
+    {
+      auto bypassed = comp->lowCutBypassButton.getToggleState();
+
+      comp->lowCutFreqSlider.setEnabled(!bypassed);
+      comp->lowCutSlopeSlider.setEnabled(!bypassed);
+    }
+  };
+
+  highCutBypassButton.onClick = [safePtr]()
+  {
+    if (auto *comp = safePtr.getComponent())
+    {
+      auto bypassed = comp->highCutBypassButton.getToggleState();
+
+      comp->highCutFreqSlider.setEnabled(!bypassed);
+      comp->highCutSlopeSlider.setEnabled(!bypassed);
+    }
+  };
+
+  analyzerEnabledButton.onClick = [safePtr]()
+  {
+    if (auto *comp = safePtr.getComponent())
+    {
+      auto enabled = comp->analyzerEnabledButton.getToggleState();
+        comp->responseCurveComponent.toggleAnalyzerEnabled(enabled);
+    }
+  };
 
   setSize(600, 480); // size of the editor window
 }
