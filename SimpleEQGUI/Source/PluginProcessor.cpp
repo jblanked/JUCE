@@ -156,44 +156,69 @@ bool SimpleEQAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) 
 void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    const int totalNumInputChannels = getTotalNumInputChannels();
+    const int totalNumOutputChannels = getTotalNumOutputChannels();
+
+    // Clear extra output channels
+    for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
-    // update parameters before processing audio to them
+    updateFilters(); // Update filters with latest parameters
 
-    updateFilters(); // update the filters with the new settings
+    if (buffer.getNumChannels() == 1)
+    {
+        // If mono, duplicate the channel into a temporary stereo buffer.
+        const int numSamples = buffer.getNumSamples();
+        juce::AudioBuffer<float> stereoBuffer;
+        // Set up stereo buffer with 2 channels
+        stereoBuffer.setSize(2, numSamples, false, true, true);
+        // Copy the mono channel into channel 0 and duplicate to channel 1.
+        stereoBuffer.copyFrom(0, 0, buffer, 0, 0, numSamples);
+        stereoBuffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
 
-    // process chain requries a processing context in order to run the audio in the links of the chain
-    // in order to make a processing context, we need to create an AudioBlock object
-    // the processBlock function is called by the host
+        // Create an audio block from the stereo buffer.
+        juce::dsp::AudioBlock<float> block(stereoBuffer);
 
-    // create an audio block object to hold the buffer
-    juce::dsp::AudioBlock<float> block(buffer);
+        auto leftBlock = block.getSingleChannelBlock(0);
+        auto rightBlock = block.getSingleChannelBlock(1);
 
-    // extract the left and right channels from the block
-    auto leftBlock = block.getSingleChannelBlock(0);  // left channel
-    auto rightBlock = block.getSingleChannelBlock(1); // right channel
+        juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+        juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
 
-    // create process context objects for the left and right channels
-    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);   // process context for left channel
-    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock); // process context for right channel
+        // Process each channel
+        leftChain.process(leftContext);
+        rightChain.process(rightContext);
 
-    // pass context to the chain to process the audio in the links of the chain
-    leftChain.process(leftContext);   // process the left channel
-    rightChain.process(rightContext); // process the right channel
+        // Here, we average the two channels back into one channel.
+        for (int sample = 0; sample < numSamples; ++sample)
+        {
+            float leftSample = stereoBuffer.getSample(0, sample);
+            float rightSample = stereoBuffer.getSample(1, sample);
+            buffer.setSample(0, sample, (leftSample + rightSample) * 0.5f);
+        }
 
-    // push buffers into the fifos
-    leftChannelFifo.update(buffer);  // update the left channel fifo with the buffer
-    rightChannelFifo.update(buffer); // update the right channel fifo with the buffer
+        // Push the processed buffer into the FIFOs
+        leftChannelFifo.update(buffer);
+        rightChannelFifo.update(buffer);
+    }
+    else
+    {
+        // For stereo or more channels, process normally.
+        juce::dsp::AudioBlock<float> block(buffer);
+        auto leftBlock = block.getSingleChannelBlock(0);
+        auto rightBlock = block.getSingleChannelBlock(1);
+
+        juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+        juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+
+        leftChain.process(leftContext);
+        rightChain.process(rightContext);
+
+        // Push buffers into the FIFOs
+        leftChannelFifo.update(buffer);
+        rightChannelFifo.update(buffer);
+    }
 }
 
 //==============================================================================

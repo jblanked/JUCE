@@ -92,12 +92,13 @@ struct SingleChannelSampleFifo
     void update(const BlockType &buffer)
     {
         jassert(prepared.get());
-        jassert(buffer.getNumChannels() > channelToUse);        // ensure the buffer is valid
-        auto *channelPtr = buffer.getReadPointer(channelToUse); // get the channel data
+        // If the buffer is mono, always use channel 0
+        int channelIndex = (buffer.getNumChannels() > channelToUse) ? channelToUse : 0;
+        auto *channelPtr = buffer.getReadPointer(channelIndex);
 
-        for (int i = 0; i < buffer.getNumSamples(); ++i) // loop through the samples
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
-            pushNextSampleIntoFifo(channelPtr[i]); // push each sample into the FIFO
+            pushNextSampleIntoFifo(channelPtr[i]);
         }
     }
 
