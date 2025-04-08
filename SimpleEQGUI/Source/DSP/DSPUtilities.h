@@ -97,17 +97,24 @@ namespace DSP
 
     inline auto makeLowCutFilter(const ChainSettings &chainSettings, double sampleRate)
     {
+        auto nyquist = static_cast<float>(sampleRate / 2.0);
+        // Clamp the low cut frequency to be at most 95% of Nyquist
+        float clampedLowCut = std::min(chainSettings.lowCutFreq, nyquist * 0.95f);
+
         return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(
-            chainSettings.lowCutFreq,
+            clampedLowCut,
             sampleRate,
-            2 * (1 + static_cast<int>(chainSettings.lowCutSlope)) // Using explicit cast for clarity
-        );
+            2 * (1 + static_cast<int>(chainSettings.lowCutSlope)));
     }
 
     inline auto makeHighCutFilter(const ChainSettings &chainSettings, double sampleRate)
     {
+        auto nyquist = static_cast<float>(sampleRate / 2.0);
+        // Clamp the high cut frequency to be at most 95% of Nyquist
+        float clampedHighCut = std::min(chainSettings.highCutFreq, nyquist * 0.95f);
+
         return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(
-            chainSettings.highCutFreq,
+            clampedHighCut,
             sampleRate,
             2 * (1 + static_cast<int>(chainSettings.highCutSlope)));
     }

@@ -23,13 +23,17 @@ namespace DSP
 
     Coefficients makePeakFilter(const ChainSettings &chainSettings, double sampleRate)
     {
+        auto nyquist = static_cast<float>(sampleRate / 2.0);
+        float clampedPeakFreq = std::min(chainSettings.peakFreq, nyquist * 0.95f);
+
         auto gain = juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels);
         if (std::abs(gain - 1.0f) < 1e-5f)
             gain = 1.0f;
+
         return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
-                                                                   chainSettings.peakFreq,
+                                                                   clampedPeakFreq,
                                                                    gain,
-                                                                   chainSettings.peakQuality); // create the peak filter coefficients
+                                                                   chainSettings.peakQuality);
     }
 
     void updateCoefficients(Coefficients &old, const Coefficients &replacements)
