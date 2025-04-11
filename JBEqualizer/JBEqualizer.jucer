@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="JbDmmJ" name="JBEqualizer" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="1.0.1"
+              companyName="JBlanked" companyWebsite="www.jblanked.com" companyEmail="jblanked@jblanked.com"
+              bundleIdentifier="com.jblanked.JBEqualizer" companyCopyright="2025"
+              pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3" pluginManufacturer="JBlanked"
+              aaxIdentifier="com.jblanked.JBEqualizer" pluginVST3Category="EQ"
+              pluginAAXCategory="1" pluginName="JBEqualizer" pluginDesc="JBEqualizer">
+  <MAINGROUP id="bIh7Ut" name="JBEqualizer">
+    <GROUP id="{7B10CE94-E23B-A232-D32E-970E31E900A4}" name="Source">
+      <FILE id="twrXVO" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
+      <GROUP id="{0B5145DB-01AE-B7F8-AD07-0711CE646C94}" name="Service">
+        <FILE id="clI2qW" name="ParameterManager.cpp" compile="1" resource="0"
+              file="Source/Service/ParameterManager.cpp"/>
+        <FILE id="SCoC50" name="ParameterManager.h" compile="0" resource="0"
+              file="Source/Service/ParameterManager.h"/>
+        <FILE id="dbpTox" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Service/PresetManager.cpp"/>
+        <FILE id="DhKJYX" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
+      </GROUP>
+      <GROUP id="{209E7D6F-8840-0697-71B0-29247195F3A8}" name="DSP">
+        <FILE id="kLhVbx" name="BasicAudioProcessor.h" compile="0" resource="0"
+              file="Source/DSP/BasicAudioProcessor.h"/>
+        <FILE id="x96WQb" name="DSPUtilities.cpp" compile="1" resource="0"
+              file="Source/DSP/DSPUtilities.cpp"/>
+        <FILE id="x3M6Oy" name="DSPUtilities.h" compile="0" resource="0" file="Source/DSP/DSPUtilities.h"/>
+        <FILE id="o7JpmV" name="Fifo.h" compile="0" resource="0" file="Source/DSP/Fifo.h"/>
+      </GROUP>
+      <GROUP id="{9EBF2886-B5F2-7230-3AA8-237DC8A64595}" name="GUI">
+        <FILE id="HckkmD" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomLookAndFeel.cpp"/>
+        <FILE id="tCxpE7" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/GUI/CustomLookAndFeel.h"/>
+        <FILE id="yW54At" name="FFTComponents.cpp" compile="1" resource="0"
+              file="Source/GUI/FFTComponents.cpp"/>
+        <FILE id="h83PQa" name="FFTComponents.h" compile="0" resource="0" file="Source/GUI/FFTComponents.h"/>
+        <FILE id="HNK60c" name="ResponseCurveComponent.cpp" compile="1" resource="0"
+              file="Source/GUI/ResponseCurveComponent.cpp"/>
+        <FILE id="K5g43b" name="ResponseCurveComponent.h" compile="0" resource="0"
+              file="Source/GUI/ResponseCurveComponent.h"/>
+        <FILE id="wys6jS" name="RotarySliderWithLabels.cpp" compile="1" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.cpp"/>
+        <FILE id="n9GNdI" name="RotarySliderWithLabels.h" compile="0" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.h"/>
+      </GROUP>
+      <FILE id="dTQ39q" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="XWY5Bu" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="D5NWr2" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="QbCs8X" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="JBEqualizer"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="JBEqualizer"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
