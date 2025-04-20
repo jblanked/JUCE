@@ -351,89 +351,43 @@ void JBEqualizerAudioProcessor::updateFilters()
 juce::AudioProcessorValueTreeState::ParameterLayout
 JBEqualizerAudioProcessor::createParameterLayout()
 {
-    // define the layout of the parameters we will use in the EQ
-    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    using namespace Service; // for the parameter manager
 
-    // add a low cut frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("lowCutFrequency", 1), "LowCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
+    Service::ParameterManager manager; // create a parameter manager to help with the parameters
 
-    // add a high cut frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("highCutFrequency", 2), "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
+    manager.addParameter("lowCutFrequency", 20.f, ParameterTypeFloatFrequency);       // Low Cut Frequency
+    manager.addParameter("highCutFrequency", 20000.f, ParameterTypeFloatFrequency);   // High Cut Frequency
+    manager.addParameter("peakFrequency", 100.f, ParameterTypeFloatFrequency);        // Peak Frequency
+    manager.addParameter("peakGain", 0.f, ParameterTypeFloatGain);                    // Peak Gain
+    manager.addParameter("peakQuality", 1.f, ParameterTypeFloatQuality);              // Peak Quality
+    manager.addParameter("peak2Frequency", 250.f, ParameterTypeFloatFrequency);       // Peak 2 Frequency
+    manager.addParameter("peak2Gain", 0.f, ParameterTypeFloatGain);                   // Peak 2 Gain
+    manager.addParameter("peak2Quality", 1.f, ParameterTypeFloatQuality);             // Peak 2 Quality
+    manager.addParameter("peak3Frequency", 1040.f, ParameterTypeFloatFrequency);      // Peak 3 Frequency
+    manager.addParameter("peak3Gain", 0.f, ParameterTypeFloatGain);                   // Peak 3 Gain
+    manager.addParameter("peak3Quality", 1.f, ParameterTypeFloatQuality);             // Peak 3 Quality
+    manager.addParameter("peak4Frequency", 2500.f, ParameterTypeFloatFrequency);      // Peak 4 Frequency
+    manager.addParameter("peak4Gain", 0.f, ParameterTypeFloatGain);                   // Peak 4 Gain
+    manager.addParameter("peak4Quality", 1.f, ParameterTypeFloatQuality);             // Peak 4 Quality
+    manager.addParameter("lowShelfFrequency", 20.f, ParameterTypeFloatFrequency);     // Low Shelf Frequency
+    manager.addParameter("lowShelfGain", 0.f, ParameterTypeFloatGain);                // Low Shelf Gain
+    manager.addParameter("lowShelfQ", 1.f, ParameterTypeFloatQuality);                // Low Shelf Q
+    manager.addParameter("highShelfFrequency", 20000.f, ParameterTypeFloatFrequency); // High Shelf Frequency
+    manager.addParameter("highShelfGain", 0.f, ParameterTypeFloatGain);               // High Shelf Gain
+    manager.addParameter("highShelfQ", 1.f, ParameterTypeFloatQuality);               // High Shelf Q
+    manager.addParameter("lowCutSlope", 0, ParameterTypeFloatSlope);                  // Low Cut Slope
+    manager.addParameter("highCutSlope", 0, ParameterTypeFloatSlope);                 // High Cut Slope
+    manager.addParameter("lowCutBypass", false, ParameterTypeBool);                   // Low Cut Bypass
+    manager.addParameter("peakBypass", false, ParameterTypeBool);                     // Peak Bypass
+    manager.addParameter("peak2Bypass", false, ParameterTypeBool);                    // Peak 2 Bypass
+    manager.addParameter("peak3Bypass", false, ParameterTypeBool);                    // Peak 3 Bypass
+    manager.addParameter("peak4Bypass", false, ParameterTypeBool);                    // Peak 4 Bypass
+    manager.addParameter("lowShelfBypass", false, ParameterTypeBool);                 // Low Shelf Bypass
+    manager.addParameter("highShelfBypass", false, ParameterTypeBool);                // High Shelf Bypass
+    manager.addParameter("highCutBypass", false, ParameterTypeBool);                  // High Cut Bypass
+    manager.addParameter("analyzerEnabled", true, ParameterTypeBool);                 // Analyzer Enabled
 
-    // add a peak frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakFrequency", 3), "Peak Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 100.f));
-
-    // add a peak gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakGain", 4), "Peak Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a peak quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peakQuality", 5), "Peak Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // add a peak frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak2Frequency", 6), "Peak 2 Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 250.f));
-
-    // add a peak gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak2Gain", 7), "Peak 2 Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a peak quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak2Quality", 8), "Peak 2 Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // add a peak frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak3Frequency", 9), "Peak 3 Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 1040.f));
-
-    // add a peak gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak3Gain", 10), "Peak 3 Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a peak quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak3Quality", 11), "Peak 3 Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // add a peak frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak4Frequency", 12), "Peak 4 Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 2500.f));
-
-    // add a peak gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak4Gain", 13), "Peak 4 Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a peak quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("peak4Quality", 14), "Peak 4 Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // add a low shelf frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("lowShelfFrequency", 15), "Low Shelf Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 20.f));
-
-    // add a low shelf gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("lowShelfGain", 16), "Low Shelf Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a low shelf quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("lowShelfQ", 17), "Low Shelf Q", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // add a high shelf frequency parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("highShelfFrequency", 18), "High Shelf Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.5f), 20000.f));
-
-    // add a high shelf gain parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("highShelfGain", 19), "High Shelf Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-
-    // add a high shelf quality parameter
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("highShelfQ", 20), "High Shelf Q", juce::NormalisableRange<float>(0.1f, 10.f, 0.1f, 1.f), 1.f));
-
-    // define a list of filter types for the low and high cut filters
-    juce::StringArray filterTypes{"12 dB/Oct", "24 dB/Oct", "36 dB/Oct", "48 dB/Oct"};
-
-    // add the list of filter types to the layout
-    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("lowCutSlope", 21), "LowCut Slope", filterTypes, 0));
-    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("highCutSlope", 22), "HighCut Slope", filterTypes, 0));
-
-    // add a bypass parameter
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("lowCutBypass", 23), "LowCut Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("peakBypass", 24), "Peak Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("peak2Bypass", 25), "Peak 2 Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("peak3Bypass", 26), "Peak 3 Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("peak4Bypass", 27), "Peak 4 Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("lowShelfBypass", 28), "Low Shelf Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("highShelfBypass", 29), "High Shelf Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("highCutBypass", 30), "HighCut Bypass", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("analyzerEnabled", 31), "Analyzer Enabled", true));
-
-    // return the layout
-    return layout;
+    return manager.getLayout(); // return the layout from the parameter manager
 }
 
 //==============================================================================

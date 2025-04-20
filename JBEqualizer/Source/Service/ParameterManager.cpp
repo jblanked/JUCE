@@ -3,7 +3,7 @@
 namespace Service
 {
     ParameterManager::ParameterManager()
-        : layout(), parameterIndex(0)
+        : layout(), parameterIndex(1)
     {
     }
 
@@ -14,18 +14,18 @@ namespace Service
             DBG("ParameterManager::addParameter: Invalid name or default value");
             return false;
         }
+
         juce::String newName = name.trim();
+
         // Check if the name already exists
         if (parameterNames.find(newName) != parameterNames.end())
         {
-            // add a number to the name that represents the copy (e.g. "name_1", "name_2", etc.)
-            int index = 1;
-            while (parameterNames.find(newName + "_" + juce::String(index)) != parameterNames.end())
-            {
-                index++;
-            }
-            newName = newName + "_" + juce::String(index);
+            // no duplicate names
+            DBG("ParameterManager::addParameter: Duplicate parameter name: " << newName);
+            jassert("Duplicate parameter name");
+            return false;
         }
+
         switch (type)
         {
         case Service::ParameterTypeBool:
@@ -92,22 +92,5 @@ namespace Service
             break;
         }
         return false;
-    }
-
-    juce::String ParameterManager::getNewParameterName(const juce::String &originalName, int index)
-    {
-        auto baseName = originalName.trim();
-        auto candidate = baseName;
-
-        // if it already exists, append “_N” until we find a free one
-        if (parameterNames.find(candidate) != parameterNames.end())
-        {
-            do
-            {
-                candidate = baseName + "_" + juce::String(index++);
-            } while (parameterNames.find(candidate) != parameterNames.end());
-        }
-
-        return candidate;
     }
 }
