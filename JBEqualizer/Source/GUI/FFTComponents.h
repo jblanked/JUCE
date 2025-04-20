@@ -138,24 +138,24 @@ namespace GUI
     struct PathProducer
     {
         PathProducer(SingleChannelSampleFifo<juce::AudioBuffer<float>> &scsf)
-            : leftChannelFifo(&scsf)
+            : monoFifo(&scsf)
         {
             // split audio spectrum from 20Hz to 20kHz into FFTOrder bins, which store the magnitude level of a range of frequencies
-            leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);    // change the order of the FFT data generator to 2048
-            monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize()); // set the size of the mono buffer to the size of the FFT data generator
+            fftDataGenerator.changeOrder(FFTOrder::order2048);    // change the order of the FFT data generator to 2048
+            monoBuffer.setSize(1, fftDataGenerator.getFFTSize()); // set the size of the mono buffer to the size of the FFT data generator
         }
 
         void process(juce::Rectangle<float> fftBounds, double sampleRate);
-        juce::Path getPath() const { return leftChannelFFTPath; } // get the path for the left channel FFT data
+        juce::Path getPath() const { return fftPath; } // get the path for the left channel FFT data
     private:
-        SingleChannelSampleFifo<juce::AudioBuffer<float>> *leftChannelFifo;
+        SingleChannelSampleFifo<juce::AudioBuffer<float>> *monoFifo;
 
         juce::AudioBuffer<float> monoBuffer;
 
-        FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator; // FFT data generator for the left channel
+        FFTDataGenerator<std::vector<float>> fftDataGenerator; // FFT data generator for the left channel
 
         AnalyzerPathGenerator<juce::Path> pathProducer; // path generator for the analyzer
 
-        juce::Path leftChannelFFTPath; // path for the left channel FFT data
+        juce::Path fftPath; // path for the left channel FFT data
     };
 }
