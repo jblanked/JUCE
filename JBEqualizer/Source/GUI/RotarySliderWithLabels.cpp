@@ -38,7 +38,8 @@ namespace GUI
 
             Rectangle<float> r;
             auto str = labels[i].label;
-            r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
+            auto strWidth{ juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), str) };
+            r.setSize(strWidth, getTextHeight());
             r.setCentre(c);
             r.setY(r.getY() + getTextHeight());
 

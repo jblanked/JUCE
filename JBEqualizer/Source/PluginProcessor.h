@@ -14,6 +14,7 @@
 #include "Service/PresetManager.h"
 #include "Service/ParameterManager.h"
 #include "Presets.h"
+#include "Settings.h"
 using namespace DSP;
 //==============================================================================
 /**

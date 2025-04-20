@@ -62,25 +62,27 @@ namespace GUI
         monoChain.setBypassed<ChainPositions::HighShelf>(chainSettings.highShelfBypassed);
         monoChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
 
+        auto sampleRate = audioProcessor.getSampleRate();
+
         // Update the peak filter coefficients
-        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate(), 1);
-        auto peak2Coefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate(), 2);
-        auto peak3Coefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate(), 3);
-        auto peak4Coefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate(), 4);
+        auto peakCoefficients = makePeakFilter(chainSettings.peakFreq, chainSettings.peakGainInDecibels, chainSettings.peakQuality, sampleRate);
+        auto peak2Coefficients = makePeakFilter(chainSettings.peak2Freq, chainSettings.peak2GainInDecibels, chainSettings.peak2Quality, sampleRate);
+        auto peak3Coefficients = makePeakFilter(chainSettings.peak3Freq, chainSettings.peak3GainInDecibels, chainSettings.peak3Quality, sampleRate);
+        auto peak4Coefficients = makePeakFilter(chainSettings.peak4Freq, chainSettings.peak4GainInDecibels, chainSettings.peak4Quality, sampleRate);
         updateCoefficients(monoChain.get<ChainPositions::Peak1>().coefficients, peakCoefficients);
         updateCoefficients(monoChain.get<ChainPositions::Peak2>().coefficients, peak2Coefficients);
         updateCoefficients(monoChain.get<ChainPositions::Peak3>().coefficients, peak3Coefficients);
         updateCoefficients(monoChain.get<ChainPositions::Peak4>().coefficients, peak4Coefficients);
 
         // Update the low and high shelf filter coefficients
-        auto lowShelfCoefficients = makeLowShelfFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highShelfCoefficients = makeHighShelfFilter(chainSettings, audioProcessor.getSampleRate());
+        auto lowShelfCoefficients = makeShelfFilter(chainSettings.lowShelfFreq, chainSettings.lowShelfGain, chainSettings.lowShelfQ, sampleRate, false);
+        auto highShelfCoefficients = makeShelfFilter(chainSettings.highShelfFreq, chainSettings.highShelfGain, chainSettings.highShelfQ, sampleRate, true);
         updateCoefficients(monoChain.get<ChainPositions::LowShelf>().coefficients, lowShelfCoefficients);
         updateCoefficients(monoChain.get<ChainPositions::HighShelf>().coefficients, highShelfCoefficients);
 
         // Update the low and high cut filter coefficients
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+        auto lowCutCoefficients = makeCutFilter(chainSettings.lowCutFreq, chainSettings.lowCutSlope, sampleRate, false);
+        auto highCutCoefficients = makeCutFilter(chainSettings.highCutFreq, chainSettings.highCutSlope, sampleRate, true);
         updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
         updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
     }
@@ -273,7 +275,8 @@ namespace GUI
                 str << f << "Hz";
             }
 
-            auto textWidth = g.getCurrentFont().getStringWidth(str);
+            auto textWidth{juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), str)};
+
             juce::Rectangle<int> r;
             r.setSize(textWidth, fontHeight);
             r.setCentre(x, 0);
@@ -291,7 +294,8 @@ namespace GUI
                 str << "+";
             str << gDb;
 
-            auto textWidth = g.getCurrentFont().getStringWidth(str);
+            auto textWidth{juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), str)};
+
             juce::Rectangle<int> r;
             r.setSize(textWidth, fontHeight);
             r.setX(getWidth() - textWidth);
@@ -303,8 +307,8 @@ namespace GUI
             str.clear();
             str << (gDb - 24.f);
             r.setX(1);
-            textWidth = g.getCurrentFont().getStringWidth(str);
-            r.setSize(textWidth, fontHeight);
+            auto textWidth2{juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), str)};
+            r.setSize(textWidth2, fontHeight);
             g.setColour(juce::Colours::lightgrey);
             g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
         }
@@ -383,7 +387,7 @@ namespace GUI
             {
                 str << freq << "Hz";
             }
-            auto textWidth = g.getCurrentFont().getStringWidth(str);
+            auto textWidth{juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), str)};
             juce::Rectangle<int> r;
             r.setSize(textWidth, fontHeight);
             r.setCentre(x, 0);

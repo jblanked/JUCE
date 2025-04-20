@@ -10,6 +10,7 @@
   <MAINGROUP id="bIh7Ut" name="JBEqualizer">
     <GROUP id="{7B10CE94-E23B-A232-D32E-970E31E900A4}" name="Source">
       <FILE id="twrXVO" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
+      <FILE id="UWp5Jk" name="Settings.h" compile="0" resource="0" file="Source/Settings.h"/>
       <GROUP id="{0B5145DB-01AE-B7F8-AD07-0711CE646C94}" name="Service">
         <FILE id="clI2qW" name="ParameterManager.cpp" compile="1" resource="0"
               file="Source/Service/ParameterManager.cpp"/>

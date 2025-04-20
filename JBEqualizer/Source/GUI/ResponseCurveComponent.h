@@ -4,6 +4,7 @@
 #include "../GUI/FFTComponents.h"
 #include "../DSP/DSPUtilities.h"
 #include "../DSP/BasicAudioProcessor.h"
+#include "../Settings.h"
 
 namespace GUI
 {

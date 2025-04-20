@@ -40,8 +40,7 @@ namespace GUI
 
             g.setFont(rswl->getTextHeight());                        // set the font size to the height of the text label
             auto text = rswl->getDisplayString();                    // get the text label for the slider
-            auto strWidth = g.getCurrentFont().getStringWidth(text); // get the width of the text label
-
+            auto strWidth{ juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), text) }; // get the width of the text label
             r.setSize(strWidth + 4, rswl->getTextHeight() + 2); // set the size of the rectangle to the width and height of the text label
             r.setCentre(bounds.getCentre());
 

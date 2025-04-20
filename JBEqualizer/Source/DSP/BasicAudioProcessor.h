@@ -11,8 +11,7 @@ public:
     virtual juce::AudioProcessorValueTreeState &getAPVTS() = 0;
 
     using BlockType = juce::AudioBuffer<float>;
-    // SingleChannelSampleFifo<BlockType> leftChannelFifo{Channel::Left};
-    // SingleChannelSampleFifo<BlockType> rightChannelFifo{Channel::Right};
+
     virtual SingleChannelSampleFifo<BlockType> &getLeftChannelFifo() = 0;
     virtual SingleChannelSampleFifo<BlockType> &getRightChannelFifo() = 0;
 

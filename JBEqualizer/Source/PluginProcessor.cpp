@@ -261,35 +261,37 @@ void JBEqualizerAudioProcessor::setStateInformation(const void *data, int sizeIn
 
 void JBEqualizerAudioProcessor::updatePeakFilters(const ChainSettings &chainSettings)
 {
-    auto peakCoefficients = makePeakFilter(chainSettings, getSampleRate(), 1);                  // create the peak filter coefficients
-    leftChain.setBypassed<ChainPositions::Peak1>(chainSettings.peakBypassed);                   // set the left peak filter to bypassed or not
-    rightChain.setBypassed<ChainPositions::Peak1>(chainSettings.peakBypassed);                  // set the right peak filter to bypassed or not
-    updateCoefficients(leftChain.get<ChainPositions::Peak1>().coefficients, peakCoefficients);  // set the coefficients for the left chain
-    updateCoefficients(rightChain.get<ChainPositions::Peak1>().coefficients, peakCoefficients); // set the coefficients for the right chain
+    auto sampleRate = getSampleRate();
+    auto peakCoefficients = makePeakFilter(chainSettings.peakFreq, chainSettings.peakGainInDecibels, chainSettings.peakQuality, sampleRate); // create the peak filter coefficients
+    leftChain.setBypassed<ChainPositions::Peak1>(chainSettings.peakBypassed);                                                                // set the left peak filter to bypassed or not
+    rightChain.setBypassed<ChainPositions::Peak1>(chainSettings.peakBypassed);                                                               // set the right peak filter to bypassed or not
+    updateCoefficients(leftChain.get<ChainPositions::Peak1>().coefficients, peakCoefficients);                                               // set the coefficients for the left chain
+    updateCoefficients(rightChain.get<ChainPositions::Peak1>().coefficients, peakCoefficients);                                              // set the coefficients for the right chain
     //
-    peakCoefficients = makePeakFilter(chainSettings, getSampleRate(), 2);                       // create the peak 2 filter coefficients
-    leftChain.setBypassed<ChainPositions::Peak2>(chainSettings.peakBypassed);                   // set the left peak filter to bypassed or not
-    rightChain.setBypassed<ChainPositions::Peak2>(chainSettings.peakBypassed);                  // set the right peak filter to bypassed or not
-    updateCoefficients(leftChain.get<ChainPositions::Peak2>().coefficients, peakCoefficients);  // set the coefficients for the left chain
-    updateCoefficients(rightChain.get<ChainPositions::Peak2>().coefficients, peakCoefficients); // set the coefficients for the right chain
+    peakCoefficients = makePeakFilter(chainSettings.peak2Freq, chainSettings.peak2GainInDecibels, chainSettings.peak2Quality, sampleRate); // create the peak 2 filter coefficients
+    leftChain.setBypassed<ChainPositions::Peak2>(chainSettings.peakBypassed);                                                              // set the left peak filter to bypassed or not
+    rightChain.setBypassed<ChainPositions::Peak2>(chainSettings.peakBypassed);                                                             // set the right peak filter to bypassed or not
+    updateCoefficients(leftChain.get<ChainPositions::Peak2>().coefficients, peakCoefficients);                                             // set the coefficients for the left chain
+    updateCoefficients(rightChain.get<ChainPositions::Peak2>().coefficients, peakCoefficients);                                            // set the coefficients for the right chain
     //
-    peakCoefficients = makePeakFilter(chainSettings, getSampleRate(), 3);                       // create the peak 3 filter coefficients
-    leftChain.setBypassed<ChainPositions::Peak3>(chainSettings.peakBypassed);                   // set the left peak filter to bypassed or not
-    rightChain.setBypassed<ChainPositions::Peak3>(chainSettings.peakBypassed);                  // set the right peak filter to bypassed or not
-    updateCoefficients(leftChain.get<ChainPositions::Peak3>().coefficients, peakCoefficients);  // set the coefficients for the left chain
-    updateCoefficients(rightChain.get<ChainPositions::Peak3>().coefficients, peakCoefficients); // set the coefficients for the right chain
+    peakCoefficients = makePeakFilter(chainSettings.peak3Freq, chainSettings.peak3GainInDecibels, chainSettings.peak3Quality, sampleRate); // create the peak 3 filter coefficients
+    leftChain.setBypassed<ChainPositions::Peak3>(chainSettings.peakBypassed);                                                              // set the left peak filter to bypassed or not
+    rightChain.setBypassed<ChainPositions::Peak3>(chainSettings.peakBypassed);                                                             // set the right peak filter to bypassed or not
+    updateCoefficients(leftChain.get<ChainPositions::Peak3>().coefficients, peakCoefficients);                                             // set the coefficients for the left chain
+    updateCoefficients(rightChain.get<ChainPositions::Peak3>().coefficients, peakCoefficients);                                            // set the coefficients for the right chain
     //
-    peakCoefficients = makePeakFilter(chainSettings, getSampleRate(), 4);                       // create the peak 4 filter coefficients
-    leftChain.setBypassed<ChainPositions::Peak4>(chainSettings.peakBypassed);                   // set the left peak filter to bypassed or not
-    rightChain.setBypassed<ChainPositions::Peak4>(chainSettings.peakBypassed);                  // set the right peak filter to bypassed or not
-    updateCoefficients(leftChain.get<ChainPositions::Peak4>().coefficients, peakCoefficients);  // set the coefficients for the left chain
-    updateCoefficients(rightChain.get<ChainPositions::Peak4>().coefficients, peakCoefficients); // set the coefficients for the right chain
+    peakCoefficients = makePeakFilter(chainSettings.peak4Freq, chainSettings.peak4GainInDecibels, chainSettings.peak4Quality, sampleRate); // create the peak 4 filter coefficients
+    leftChain.setBypassed<ChainPositions::Peak4>(chainSettings.peakBypassed);                                                              // set the left peak filter to bypassed or not
+    rightChain.setBypassed<ChainPositions::Peak4>(chainSettings.peakBypassed);                                                             // set the right peak filter to bypassed or not
+    updateCoefficients(leftChain.get<ChainPositions::Peak4>().coefficients, peakCoefficients);                                             // set the coefficients for the left chain
+    updateCoefficients(rightChain.get<ChainPositions::Peak4>().coefficients, peakCoefficients);                                            // set the coefficients for the right chain
 }
 
 void JBEqualizerAudioProcessor::updateLowCutFilters(const ChainSettings &chainSettings)
 {
     // set the low cut frequency and slope
-    auto lowCutCoefficients = makeLowCutFilter(chainSettings, getSampleRate()); // create the low cut filter coefficients
+
+    auto lowCutCoefficients = makeCutFilter(chainSettings.lowCutFreq, chainSettings.lowCutSlope, getSampleRate(), false); // create the low cut filter coefficients
     auto &leftLowCut = leftChain.get<ChainPositions::LowCut>();
     auto &rightLowCut = rightChain.get<ChainPositions::LowCut>();
 
@@ -303,7 +305,7 @@ void JBEqualizerAudioProcessor::updateLowCutFilters(const ChainSettings &chainSe
 void JBEqualizerAudioProcessor::updateHighCutFilters(const ChainSettings &chainSettings)
 {
     // set the high cut frequency and slope
-    auto highCutCoefficients = makeHighCutFilter(chainSettings, getSampleRate()); // create the high cut filter coefficients
+    auto highCutCoefficients = makeCutFilter(chainSettings.highCutFreq, chainSettings.highCutSlope, getSampleRate(), true); // create the high cut filter coefficients
     auto &leftHighCut = leftChain.get<ChainPositions::HighCut>();
     auto &rightHighCut = rightChain.get<ChainPositions::HighCut>();
 
@@ -316,8 +318,8 @@ void JBEqualizerAudioProcessor::updateHighCutFilters(const ChainSettings &chainS
 
 void JBEqualizerAudioProcessor::updateShelfFilters(const ChainSettings &chainSettings)
 {
-    auto lowShelfCoefficients = makeLowShelfFilter(chainSettings, getSampleRate());   // create the low shelf filter coefficients
-    auto highShelfCoefficients = makeHighShelfFilter(chainSettings, getSampleRate()); // create the high shelf filter coefficients
+    auto lowShelfCoefficients = makeShelfFilter(chainSettings.lowShelfFreq, chainSettings.lowShelfGain, chainSettings.lowShelfQ, getSampleRate(), false);    // create the low shelf filter coefficients
+    auto highShelfCoefficients = makeShelfFilter(chainSettings.highShelfFreq, chainSettings.highShelfGain, chainSettings.highShelfQ, getSampleRate(), true); // create the high shelf filter coefficients
 
     auto &leftLowShelf = leftChain.get<ChainPositions::LowShelf>();
     auto &rightLowShelf = rightChain.get<ChainPositions::LowShelf>();

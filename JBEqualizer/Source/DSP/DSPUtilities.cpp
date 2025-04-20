@@ -2,94 +2,48 @@
 
 namespace DSP
 {
-    ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts)
+
+    Coefficients makePeakFilter(float peakFreq, float peakGain, float peakQuality, double sampleRate)
     {
-        ChainSettings settings; // initialize the settings struct
+        // Clamp the peak frequency to a maximum of 95% of Nyquist frequency
+        float nyquist = static_cast<float>(sampleRate / 2.0);
+        float clampedPeakFreq = std::min(peakFreq, nyquist * 0.95f);
 
-        settings.lowCutFreq = apvts.getRawParameterValue("lowCutFrequency")->load();                    // get the low cut frequency from the apvts
-        settings.highCutFreq = apvts.getRawParameterValue("highCutFrequency")->load();                  // get the high cut frequency from the apvts
-        settings.peakFreq = apvts.getRawParameterValue("peakFrequency")->load();                        // get the peak frequency from the apvts
-        settings.peakGainInDecibels = apvts.getRawParameterValue("peakGain")->load();                   // get the peak gain from the apvts
-        settings.peakQuality = apvts.getRawParameterValue("peakQuality")->load();                       // get the peak quality from the apvts
-        settings.peak2Freq = apvts.getRawParameterValue("peak2Frequency")->load();                      // get the second peak frequency from the apvts
-        settings.peak2GainInDecibels = apvts.getRawParameterValue("peak2Gain")->load();                 // get the second peak gain from the apvts
-        settings.peak2Quality = apvts.getRawParameterValue("peak2Quality")->load();                     // get the second peak quality from the apvt
-        settings.peak3Freq = apvts.getRawParameterValue("peak3Frequency")->load();                      // get the third peak frequency from the apvts
-        settings.peak3GainInDecibels = apvts.getRawParameterValue("peak3Gain")->load();                 // get the third peak gain from the apvts
-        settings.peak3Quality = apvts.getRawParameterValue("peak3Quality")->load();                     // get the third peak quality from the apvts
-        settings.peak4Freq = apvts.getRawParameterValue("peak4Frequency")->load();                      // get the fourth peak frequency from the apvts
-        settings.peak4GainInDecibels = apvts.getRawParameterValue("peak4Gain")->load();                 // get the fourth peak gain from the apvts
-        settings.peak4Quality = apvts.getRawParameterValue("peak4Quality")->load();                     // get the fourth peak quality from the apvts
-        settings.lowShelfFreq = apvts.getRawParameterValue("lowShelfFrequency")->load();                // get the low shelf frequency from the apvts
-        settings.lowShelfGain = apvts.getRawParameterValue("lowShelfGain")->load();                     // get the low shelf gain from the apvts
-        settings.lowShelfQ = apvts.getRawParameterValue("lowShelfQ")->load();                           // get the low shelf Q from the apvts
-        settings.highShelfFreq = apvts.getRawParameterValue("highShelfFrequency")->load();              // get the high shelf frequency from the apvts
-        settings.highShelfGain = apvts.getRawParameterValue("highShelfGain")->load();                   // get the high shelf gain from the apvts
-        settings.highShelfQ = apvts.getRawParameterValue("highShelfQ")->load();                         // get the high shelf Q from the apvts
-        settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("lowCutSlope")->load());   // get the low cut slope from the apvts
-        settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("highCutSlope")->load()); // get the high cut slope from the apvts
+        // Convert gain from decibels to linear scale
+        float gain = juce::Decibels::decibelsToGain(peakGain);
 
-        settings.lowCutBypassed = apvts.getRawParameterValue("lowCutBypass")->load() > 0.5f;   // get the low cut bypassed state from the apvts
-        settings.lowShelfFreq = apvts.getRawParameterValue("lowShelfFrequency")->load();       // get the low shelf frequency from the apvts
-        settings.peakBypassed = apvts.getRawParameterValue("peakBypass")->load() > 0.5f;       // get the peak bypassed state from the apvts
-        settings.peak2Bypassed = apvts.getRawParameterValue("peak2Bypass")->load() > 0.5f;     // get the second peak bypassed state from the apvts
-        settings.peak3Bypassed = apvts.getRawParameterValue("peak3Bypass")->load() > 0.5f;     // get the third peak bypassed state from the apvts
-        settings.peak4Bypassed = apvts.getRawParameterValue("peak4Bypass")->load() > 0.5f;     // get the fourth peak bypassed state from the apvts
-        settings.lowShelfGain = apvts.getRawParameterValue("lowShelfGain")->load();            // get the low shelf gain from the apvts
-        settings.highCutBypassed = apvts.getRawParameterValue("highCutBypass")->load() > 0.5f; // get the high cut bypassed state from the apvts
+        if (std::abs(gain - 1.0f) < 1e-5f)
+            gain = 1.0f;
 
-        return settings; // return the settings struct
+        // Create and return the peak filter coefficients
+        return juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, clampedPeakFreq, peakQuality, gain);
     }
 
-    Coefficients makePeakFilter(const ChainSettings &chainSettings, double sampleRate, int peakIndex)
+    CutCoefficients makeCutFilter(float cutFreq, Slope slope, double sampleRate, bool isHighCut)
     {
-        if (peakIndex < 1 || peakIndex > 4)
-            return nullptr;
+        // Clamp the cut frequency to a maximum of 95% of Nyquist frequency
+        float nyquist = static_cast<float>(sampleRate / 2.0);
+        float clampedCutFreq = std::min(cutFreq, nyquist * 0.95f);
 
-        auto nyquist = static_cast<float>(sampleRate / 2.0);
-        float clampedPeakFreq = 0.0f;
-        auto gain = 0.0f;
-        juce::dsp::IIR::Coefficients<float>::Ptr peakFilter = nullptr;
+        if (isHighCut)
+            return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(clampedCutFreq, sampleRate, 2 * (1 + static_cast<int>(slope)));
+        else
+            return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(clampedCutFreq, sampleRate, 2 * (1 + static_cast<int>(slope)));
+    }
 
-        switch (peakIndex)
-        {
-        case 1:
-            clampedPeakFreq = std::min(chainSettings.peakFreq, nyquist * 0.95f);
-            gain = juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels);
-            if (std::abs(gain - 1.0f) < 1e-5f)
-                gain = 1.0f;
-            peakFilter = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-                sampleRate, clampedPeakFreq, chainSettings.peakQuality, gain);
-            break;
-        case 2:
-            clampedPeakFreq = std::min(chainSettings.peak2Freq, nyquist * 0.95f);
-            gain = juce::Decibels::decibelsToGain(chainSettings.peak2GainInDecibels);
-            if (std::abs(gain - 1.0f) < 1e-5f)
-                gain = 1.0f;
-            peakFilter = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-                sampleRate, clampedPeakFreq, chainSettings.peak2Quality, gain);
-            break;
-        case 3:
-            clampedPeakFreq = std::min(chainSettings.peak3Freq, nyquist * 0.95f);
-            gain = juce::Decibels::decibelsToGain(chainSettings.peak3GainInDecibels);
-            if (std::abs(gain - 1.0f) < 1e-5f)
-                gain = 1.0f;
-            peakFilter = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-                sampleRate, clampedPeakFreq, chainSettings.peak3Quality, gain);
-            break;
-        case 4:
-            clampedPeakFreq = std::min(chainSettings.peak4Freq, nyquist * 0.95f);
-            gain = juce::Decibels::decibelsToGain(chainSettings.peak4GainInDecibels);
-            if (std::abs(gain - 1.0f) < 1e-5f)
-                gain = 1.0f;
-            peakFilter = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-                sampleRate, clampedPeakFreq, chainSettings.peak4Quality, gain);
-            break;
-        default:
-            return nullptr;
-        }
+    Coefficients makeShelfFilter(float shelfFreq, float shelfGain, float shelfQuality, double sampleRate, bool isHighShelf)
+    {
+        float nyquist = static_cast<float>(sampleRate / 2.0);
+        // Use a default minimum (e.g., 20 Hz) if the value is 0 or less
+        float freqToUse = (shelfFreq <= 0.0f) ? 20.0f : shelfFreq;
 
-        return peakFilter;
+        // Clamp frequency if necessary (e.g., to 95% of Nyquist)
+        float clampedFreq = std::min(freqToUse, nyquist * 0.95f);
+
+        float linearGain = juce::Decibels::decibelsToGain(shelfGain);
+
+        return isHighShelf ? juce::dsp::IIR::Coefficients<float>::makeHighShelf(sampleRate, clampedFreq, shelfQuality, linearGain)
+                           : juce::dsp::IIR::Coefficients<float>::makeLowShelf(sampleRate, clampedFreq, shelfQuality, linearGain);
     }
 
     void updateCoefficients(Coefficients &old, const Coefficients &replacements)

@@ -11,69 +11,69 @@
 
 //==============================================================================
 JBEqualizerAudioProcessorEditor::JBEqualizerAudioProcessorEditor(JBEqualizerAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p), presetPanel(p.getPresetManager()),
-      // Peaks
-      peakFreqSlider(*audioProcessor.apvts.getParameter("peakFrequency"), "Hz"),
-      peakGainSlider(*audioProcessor.apvts.getParameter("peakGain"), "dB"),
-      peakQualitySlider(*audioProcessor.apvts.getParameter("peakQuality"), ""),
-      peak2FreqSlider(*audioProcessor.apvts.getParameter("peak2Frequency"), "Hz"),
-      peak2GainSlider(*audioProcessor.apvts.getParameter("peak2Gain"), "dB"),
-      peak2QualitySlider(*audioProcessor.apvts.getParameter("peak2Quality"), ""),
-      peak3FreqSlider(*audioProcessor.apvts.getParameter("peak3Frequency"), "Hz"),
-      peak3GainSlider(*audioProcessor.apvts.getParameter("peak3Gain"), "dB"),
-      peak3QualitySlider(*audioProcessor.apvts.getParameter("peak3Quality"), ""),
-      peak4FreqSlider(*audioProcessor.apvts.getParameter("peak4Frequency"), "Hz"),
-      peak4GainSlider(*audioProcessor.apvts.getParameter("peak4Gain"), "dB"),
-      peak4QualitySlider(*audioProcessor.apvts.getParameter("peak4Quality"), ""),
-      // Shelves
-      lowShelfFreqSlider(*audioProcessor.apvts.getParameter("lowShelfFrequency"), "Hz"),
-      lowShelfGainSlider(*audioProcessor.apvts.getParameter("lowShelfGain"), "dB"),
-      lowShelfQSlider(*audioProcessor.apvts.getParameter("lowShelfQ"), ""),
-      highShelfFreqSlider(*audioProcessor.apvts.getParameter("highShelfFrequency"), "Hz"),
-      highShelfGainSlider(*audioProcessor.apvts.getParameter("highShelfGain"), "dB"),
-      highShelfQSlider(*audioProcessor.apvts.getParameter("highShelfQ"), ""),
-      // Cuts
-      lowCutFreqSlider(*audioProcessor.apvts.getParameter("lowCutFrequency"), "Hz"),
-      highCutFreqSlider(*audioProcessor.apvts.getParameter("highCutFrequency"), "Hz"),
-      lowCutSlopeSlider(*audioProcessor.apvts.getParameter("lowCutSlope"), "dB/Oct"),
-      highCutSlopeSlider(*audioProcessor.apvts.getParameter("highCutSlope"), "dB/Oct"),
-      // Analyzer
-      responseCurveComponent(audioProcessor),
-      // Sliders
-      peakFreqSliderAttachment(audioProcessor.apvts, "peakFrequency", peakFreqSlider),
-      peakGainSliderAttachment(audioProcessor.apvts, "peakGain", peakGainSlider),
-      peakQualitySliderAttachment(audioProcessor.apvts, "peakQuality", peakQualitySlider),
-      peak2FreqSliderAttachment(audioProcessor.apvts, "peak2Frequency", peak2FreqSlider),
-      peak2GainSliderAttachment(audioProcessor.apvts, "peak2Gain", peak2GainSlider),
-      peak2QualitySliderAttachment(audioProcessor.apvts, "peak2Quality", peak2QualitySlider),
-      peak3FreqSliderAttachment(audioProcessor.apvts, "peak3Frequency", peak3FreqSlider),
-      peak3GainSliderAttachment(audioProcessor.apvts, "peak3Gain", peak3GainSlider),
-      peak3QualitySliderAttachment(audioProcessor.apvts, "peak3Quality", peak3QualitySlider),
-      peak4FreqSliderAttachment(audioProcessor.apvts, "peak4Frequency", peak4FreqSlider),
-      peak4GainSliderAttachment(audioProcessor.apvts, "peak4Gain", peak4GainSlider),
-      peak4QualitySliderAttachment(audioProcessor.apvts, "peak4Quality", peak4QualitySlider),
-      //
-      lowShelfFreqSliderAttachment(audioProcessor.apvts, "lowShelfFrequency", lowShelfFreqSlider),
-      lowShelfGainSliderAttachment(audioProcessor.apvts, "lowShelfGain", lowShelfGainSlider),
-      lowShelfQSliderAttachment(audioProcessor.apvts, "lowShelfQ", lowShelfQSlider),
-      highShelfFreqSliderAttachment(audioProcessor.apvts, "highShelfFrequency", highShelfFreqSlider),
-      highShelfGainSliderAttachment(audioProcessor.apvts, "highShelfGain", highShelfGainSlider),
-      highShelfQSliderAttachment(audioProcessor.apvts, "highShelfQ", highShelfQSlider),
-      //
-      lowCutFreqSliderAttachment(audioProcessor.apvts, "lowCutFrequency", lowCutFreqSlider),
-      highCutFreqSliderAttachment(audioProcessor.apvts, "highCutFrequency", highCutFreqSlider),
-      lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
-      highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider),
-      // Bypass Buttons
-      lowCutBypassButtonAttachment(audioProcessor.apvts, "lowCutBypass", lowCutBypassButton),
-      peakBypassButtonAttachment(audioProcessor.apvts, "peakBypass", peakBypassButton),
-      peak2BypassButtonAttachment(audioProcessor.apvts, "peak2Bypass", peak2BypassButton),
-      peak3BypassButtonAttachment(audioProcessor.apvts, "peak3Bypass", peak3BypassButton),
-      peak4BypassButtonAttachment(audioProcessor.apvts, "peak4Bypass", peak4BypassButton),
-      lowShelfBypassButtonAttachment(audioProcessor.apvts, "lowShelfBypass", lowShelfBypassButton),
-      highShelfBypassButtonAttachment(audioProcessor.apvts, "highShelfBypass", highShelfBypassButton),
-      highCutBypassButtonAttachment(audioProcessor.apvts, "highCutBypass", highCutBypassButton),
-      analyzerEnabledButtonAttachment(audioProcessor.apvts, "analyzerEnabled", analyzerEnabledButton)
+: AudioProcessorEditor(&p), audioProcessor(p), peakFreqSlider(*audioProcessor.apvts.getParameter("peakFrequency"), "Hz"),
+// Peaks
+peakGainSlider(*audioProcessor.apvts.getParameter("peakGain"), "dB"),
+peakQualitySlider(*audioProcessor.apvts.getParameter("peakQuality"), ""),
+peak2FreqSlider(*audioProcessor.apvts.getParameter("peak2Frequency"), "Hz"),
+peak2GainSlider(*audioProcessor.apvts.getParameter("peak2Gain"), "dB"),
+peak2QualitySlider(*audioProcessor.apvts.getParameter("peak2Quality"), ""),
+peak3FreqSlider(*audioProcessor.apvts.getParameter("peak3Frequency"), "Hz"),
+peak3GainSlider(*audioProcessor.apvts.getParameter("peak3Gain"), "dB"),
+peak3QualitySlider(*audioProcessor.apvts.getParameter("peak3Quality"), ""),
+peak4FreqSlider(*audioProcessor.apvts.getParameter("peak4Frequency"), "Hz"),
+peak4GainSlider(*audioProcessor.apvts.getParameter("peak4Gain"), "dB"),
+peak4QualitySlider(*audioProcessor.apvts.getParameter("peak4Quality"), ""),
+lowShelfFreqSlider(*audioProcessor.apvts.getParameter("lowShelfFrequency"), "Hz"),
+// Shelves
+lowShelfGainSlider(*audioProcessor.apvts.getParameter("lowShelfGain"), "dB"),
+lowShelfQSlider(*audioProcessor.apvts.getParameter("lowShelfQ"), ""),
+highShelfFreqSlider(*audioProcessor.apvts.getParameter("highShelfFrequency"), "Hz"),
+highShelfGainSlider(*audioProcessor.apvts.getParameter("highShelfGain"), "dB"),
+highShelfQSlider(*audioProcessor.apvts.getParameter("highShelfQ"), ""),
+lowCutFreqSlider(*audioProcessor.apvts.getParameter("lowCutFrequency"), "Hz"),
+// Cuts
+highCutFreqSlider(*audioProcessor.apvts.getParameter("highCutFrequency"), "Hz"),
+lowCutSlopeSlider(*audioProcessor.apvts.getParameter("lowCutSlope"), "dB/Oct"),
+highCutSlopeSlider(*audioProcessor.apvts.getParameter("highCutSlope"), "dB/Oct"),
+peakFreqSliderAttachment(audioProcessor.apvts, "peakFrequency", peakFreqSlider),
+// Analyzer
+peakGainSliderAttachment(audioProcessor.apvts, "peakGain", peakGainSlider),
+// Sliders
+peakQualitySliderAttachment(audioProcessor.apvts, "peakQuality", peakQualitySlider),
+peak2FreqSliderAttachment(audioProcessor.apvts, "peak2Frequency", peak2FreqSlider),
+peak2GainSliderAttachment(audioProcessor.apvts, "peak2Gain", peak2GainSlider),
+peak2QualitySliderAttachment(audioProcessor.apvts, "peak2Quality", peak2QualitySlider),
+peak3FreqSliderAttachment(audioProcessor.apvts, "peak3Frequency", peak3FreqSlider),
+peak3GainSliderAttachment(audioProcessor.apvts, "peak3Gain", peak3GainSlider),
+peak3QualitySliderAttachment(audioProcessor.apvts, "peak3Quality", peak3QualitySlider),
+peak4FreqSliderAttachment(audioProcessor.apvts, "peak4Frequency", peak4FreqSlider),
+peak4GainSliderAttachment(audioProcessor.apvts, "peak4Gain", peak4GainSlider),
+peak4QualitySliderAttachment(audioProcessor.apvts, "peak4Quality", peak4QualitySlider),
+lowShelfFreqSliderAttachment(audioProcessor.apvts, "lowShelfFrequency", lowShelfFreqSlider),
+lowShelfGainSliderAttachment(audioProcessor.apvts, "lowShelfGain", lowShelfGainSlider),
+//
+lowShelfQSliderAttachment(audioProcessor.apvts, "lowShelfQ", lowShelfQSlider),
+highShelfFreqSliderAttachment(audioProcessor.apvts, "highShelfFrequency", highShelfFreqSlider),
+highShelfGainSliderAttachment(audioProcessor.apvts, "highShelfGain", highShelfGainSlider),
+highShelfQSliderAttachment(audioProcessor.apvts, "highShelfQ", highShelfQSlider),
+lowCutFreqSliderAttachment(audioProcessor.apvts, "lowCutFrequency", lowCutFreqSlider),
+highCutFreqSliderAttachment(audioProcessor.apvts, "highCutFrequency", highCutFreqSlider),
+//
+lowCutSlopeSliderAttachment(audioProcessor.apvts, "lowCutSlope", lowCutSlopeSlider),
+highCutSlopeSliderAttachment(audioProcessor.apvts, "highCutSlope", highCutSlopeSlider),
+responseCurveComponent(audioProcessor),
+lowCutBypassButtonAttachment(audioProcessor.apvts, "lowCutBypass", lowCutBypassButton),
+// Bypass Buttons
+lowShelfBypassButtonAttachment(audioProcessor.apvts, "lowShelfBypass", lowShelfBypassButton),
+peakBypassButtonAttachment(audioProcessor.apvts, "peakBypass", peakBypassButton),
+peak2BypassButtonAttachment(audioProcessor.apvts, "peak2Bypass", peak2BypassButton),
+peak3BypassButtonAttachment(audioProcessor.apvts, "peak3Bypass", peak3BypassButton),
+peak4BypassButtonAttachment(audioProcessor.apvts, "peak4Bypass", peak4BypassButton),
+highShelfBypassButtonAttachment(audioProcessor.apvts, "highShelfBypass", highShelfBypassButton),
+highCutBypassButtonAttachment(audioProcessor.apvts, "highCutBypass", highCutBypassButton),
+analyzerEnabledButtonAttachment(audioProcessor.apvts, "analyzerEnabled", analyzerEnabledButton),
+presetPanel(p.getPresetManager())
 {
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
@@ -342,7 +342,7 @@ void JBEqualizerAudioProcessorEditor::resized()
   // Allocate 15% of the middle area to each shelf:
   int shelfWidth = static_cast<int>(middleWidth * 0.15f);
   // The peak group area will be the remaining width:
-  int peakAreaWidth = middleWidth - (2 * shelfWidth);
+  //int peakAreaWidth = middleWidth - (2 * shelfWidth);
 
   // Remove the shelf areas from the middle area:
   auto lowShelfArea = middleArea.removeFromLeft(shelfWidth);
