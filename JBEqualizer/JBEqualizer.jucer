@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="JbDmmJ" name="JBEqualizer" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="1.0.1"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="1.0.2"
               companyName="JBlanked" companyWebsite="www.jblanked.com" companyEmail="jblanked@jblanked.com"
               bundleIdentifier="com.jblanked.JBEqualizer" companyCopyright="2025"
               pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3" pluginManufacturer="JBlanked"
