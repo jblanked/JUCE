@@ -2,7 +2,7 @@
 #include <JuceHeader.h>
 #include <array>
 #include "Service/PresetManager.h"
-#define DEFAULT_PRESET_COUNT 4
+#define DEFAULT_PRESET_COUNT 18
 #define JUCE_OFF 0.0
 #define JUCE_ON 1.0
 // frequency values in Hz from 20Hz to 20kHz
@@ -10,8 +10,314 @@
 // quality values from 0.1 to 10
 // slope values from 12, 24, 36, 48
 // bypass values 0 or 1
-const Service::DefaultPreset defaultPresets[] =
+const Service::DefaultPreset defaultPresets[DEFAULT_PRESET_COUNT] =
     {
+        {
+            "808",
+            {{"lowCutFrequency", 20.f},      // 1
+             {"highCutFrequency", 5700.f},   // 2
+             {"peak3Frequency", 498.f},      // 3
+             {"peak3Gain", -2.2f},           // 4
+             {"peak3Quality", 0.83f},        // 5
+             {"peak2Frequency", 174.f},      // 6
+             {"peak2Gain", 1.1f},            // 7
+             {"peak2Quality", 0.93f},        // 8
+             {"peak4Frequency", 1320.f},     // 9
+             {"peak4Gain", -0.7f},           // 10
+             {"peak4Quality", 0.3f},         // 11
+             {"peakFrequency", 45.8f},       // 12
+             {"peakGain", 2.2f},             // 13
+             {"peakQuality", 2.2f},          // 14
+             {"lowShelfFrequency", 20.f},    // 15
+             {"lowShelfGain", -15.2f},       // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_ON},      // 23
+             {"peakBypass", JUCE_OFF},       // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_OFF},    // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // 808
+        {
+            "808 2",
+            {{"lowCutFrequency", 23.6f},     // 1
+             {"highCutFrequency", 380.f},    // 2
+             {"peakFrequency", 43.4f},       // 3
+             {"peakGain", -4.1f},            // 4
+             {"peakQuality", 0.64f},         // 5
+             {"peak2Frequency", 171.f},      // 6
+             {"peak2Gain", 3.8f},            // 7
+             {"peak2Quality", 0.6f},         // 8
+             {"peak3Frequency", 885.f},      // 9
+             {"peak3Gain", -2.1f},           // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 2820.f},     // 12
+             {"peak4Gain", 3.1f},            // 13
+             {"peak4Quality", 0.2f},         // 14
+             {"lowShelfFrequency", 75.f},    // 15
+             {"lowShelfGain", 0.f},          // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 4660.f}, // 18
+             {"highShelfGain", -24.f},       // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 48.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_OFF},       // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_OFF},  // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // 808 2
+        {
+            "Ad-Lib Delay",
+            {{"lowCutFrequency", 510.f},     // 1
+             {"highCutFrequency", 20000.f},  // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 250.f},      // 6
+             {"peak2Gain", 0.f},             // 7
+             {"peak2Quality", 0.3f},         // 8
+             {"peak3Frequency", 750.f},      // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 3300.f},     // 12
+             {"peak4Gain", -20.f},           // 13
+             {"peak4Quality", 0.2f},         // 14
+             {"lowShelfFrequency", 162.f},   // 15
+             {"lowShelfGain", -24.f},        // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_ON},       // 25
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Ad-Lib Delay
+        {
+            "Background Vocals",
+            {{"lowCutFrequency", 246.f},     // 1
+             {"highCutFrequency", 17000.f},  // 2
+             {"peakFrequency", 220.f},       // 3
+             {"peakGain", -2.f},             // 4
+             {"peakQuality", 2.f},           // 5
+             {"peak2Frequency", 340.f},      // 6
+             {"peak2Gain", -3.5f},           // 7
+             {"peak2Quality", 5.6f},         // 8
+             {"peak3Frequency", 940.f},      // 9
+             {"peak3Gain", -2.f},            // 10
+             {"peak3Quality", 11.f},         // 11
+             {"peak4Frequency", 2200.f},     // 12
+             {"peak4Gain", -3.5f},           // 13
+             {"peak4Quality", 2.f},          // 14
+             {"lowShelfFrequency", 198.f},   // 15
+             {"lowShelfGain", -24.f},        // 16
+             {"lowShelfQ", 1.1f},            // 17
+             {"highShelfFrequency", 8500.f}, // 18
+             {"highShelfGain", 7.5f},        // 19
+             {"highShelfQ", 0.28f},          // 20
+             {"lowCutSlope", 12.0},          // 21
+             {"highCutSlope", 12.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_OFF},       // 24
+             {"peak2Bypass", JUCE_ON},       // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_OFF},  // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Background Vocals
+        {
+            "Filter",
+            {{"lowCutFrequency", 20.f},      // 1
+             {"highCutFrequency", 19400.f},  // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 161.f},      // 6
+             {"peak2Gain", -3.5f},           // 7
+             {"peak2Quality", 0.54f},        // 8
+             {"peak3Frequency", 750.f},      // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 3260.f},     // 12
+             {"peak4Gain", -23.9f},          // 13
+             {"peak4Quality", 0.2f},         // 14
+             {"lowShelfFrequency", 75.5f},   // 15
+             {"lowShelfGain", -19.2f},       // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 2640.f}, // 18
+             {"highShelfGain", -24.f},       // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_ON},      // 23
+             {"peakBypass", JUCE_OFF},       // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_OFF},  // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Filter
+        {
+            "Hi-Hat",
+            {{"lowCutFrequency", 995.f},      // 1
+             {"highCutFrequency", 20000.f},   // 2
+             {"peakFrequency", 100.f},        // 3
+             {"peakGain", 0.f},               // 4
+             {"peakQuality", 0.6f},           // 5
+             {"peak2Frequency", 250.f},       // 6
+             {"peak2Gain", 0.f},              // 7
+             {"peak2Quality", 0.3f},          // 8
+             {"peak3Frequency", 780.f},       // 9
+             {"peak3Gain", -0.1f},            // 10
+             {"peak3Quality", 0.3f},          // 11
+             {"peak4Frequency", 2460.f},      // 12
+             {"peak4Gain", 2.f},              // 13
+             {"peak4Quality", 2.5f},          // 14
+             {"lowShelfFrequency", 75.f},     // 15
+             {"lowShelfGain", 0.f},           // 16
+             {"lowShelfQ", 1.f},              // 17
+             {"highShelfFrequency", 10600.f}, // 18
+             {"highShelfGain", 4.1f},         // 19
+             {"highShelfQ", 1.f},             // 20
+             {"lowCutSlope", 24.0},           // 21
+             {"highCutSlope", 24.0},          // 22
+             {"lowCutBypass", JUCE_OFF},      // 23
+             {"peakBypass", JUCE_ON},         // 24
+             {"peak2Bypass", JUCE_ON},        // 25
+             {"peak3Bypass", JUCE_OFF},       // 26
+             {"peak4Bypass", JUCE_ON},        // 27
+             {"lowShelfBypass", JUCE_ON},     // 28
+             {"highShelfBypass", JUCE_OFF},   // 29
+             {"highCutBypass", JUCE_ON},      // 30
+             {"analyzerEnabled", JUCE_ON}},   // 31
+        },                                    // Hi-Hat
+        {
+            "Hi-Hat 2",
+            {{"lowCutFrequency", 1320.f},    // 1
+             {"highCutFrequency", 20000.f},  // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 250.f},      // 6
+             {"peak2Gain", 0.f},             // 7
+             {"peak2Quality", 0.3f},         // 8
+             {"peak3Frequency", 750.f},      // 9
+             {"peak3Gain", -0.1f},           // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 2500.f},     // 12
+             {"peak4Gain", 2.f},             // 13
+             {"peak4Quality", 2.5f},         // 14
+             {"lowShelfFrequency", 75.f},    // 15
+             {"lowShelfGain", 0.f},          // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_ON},       // 25
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_ON},       // 27
+             {"lowShelfBypass", JUCE_ON},    // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Hi-Hat 2
+        {
+            "Kick",
+            {{"lowCutFrequency", 20.f},      // 1
+             {"highCutFrequency", 5700.f},   // 2
+             {"peakFrequency", 49.8f},       // 3
+             {"peakGain", -0.1f},            // 4
+             {"peakQuality", 1.5f},          // 5
+             {"peak2Frequency", 174.f},      // 6
+             {"peak2Gain", -0.5f},           // 7
+             {"peak2Quality", 0.71f},        // 8
+             {"peak3Frequency", 1320.f},     // 9
+             {"peak3Gain", 0.5f},            // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 640.f},      // 12
+             {"peak4Gain", 0.2f},            // 13
+             {"peak4Quality", 1.7f},         // 14
+             {"lowShelfFrequency", 30.8f},   // 15
+             {"lowShelfGain", 0.1f},         // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_ON},      // 23
+             {"peakBypass", JUCE_OFF},       // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_ON},       // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Kick
+        {
+            "Kick 2",
+            {{"lowCutFrequency", 20.f},      // 1
+             {"highCutFrequency", 5700.f},   // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 174.f},      // 6
+             {"peak2Gain", -1.f},            // 7
+             {"peak2Quality", 0.71f},        // 8
+             {"peak3Frequency", 1320.f},     // 9
+             {"peak3Gain", 0.5f},            // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 2500.f},     // 12
+             {"peak4Gain", 0.f},             // 13
+             {"peak4Quality", 0.2f},         // 14
+             {"lowShelfFrequency", 30.f},    // 15
+             {"lowShelfGain", 0.f},          // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_ON},      // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_OFF},      // 26
+             {"peak4Bypass", JUCE_ON},       // 27
+             {"lowShelfBypass", JUCE_ON},    // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Kick 2
         {
             "Main Vocals",
             {{"lowCutFrequency", 106.f},     // 1
@@ -47,39 +353,209 @@ const Service::DefaultPreset defaultPresets[] =
              {"analyzerEnabled", JUCE_ON}},  // 31
         },                                   // Main Vocals
         {
-            "Background Vocals",
-            {{"lowCutFrequency", 246.f},     // 1
+            "Piano",
+            {{"lowCutFrequency", 30.f},      // 1
              {"highCutFrequency", 17000.f},  // 2
-             {"peakFrequency", 220.f},       // 3
-             {"peakGain", -2.f},             // 4
-             {"peakQuality", 2.f},           // 5
-             {"peak2Frequency", 340.f},      // 6
-             {"peak2Gain", -3.5f},           // 7
-             {"peak2Quality", 5.6f},         // 8
-             {"peak3Frequency", 940.f},      // 9
-             {"peak3Gain", -2.f},            // 10
-             {"peak3Quality", 11.f},         // 11
-             {"peak4Frequency", 2200.f},     // 12
-             {"peak4Gain", -3.5f},           // 13
-             {"peak4Quality", 2.f},          // 14
-             {"lowShelfFrequency", 198.f},   // 15
-             {"lowShelfGain", -24.f},        // 16
-             {"lowShelfQ", 1.1f},            // 17
-             {"highShelfFrequency", 8500.f}, // 18
-             {"highShelfGain", 7.5f},        // 19
-             {"highShelfQ", 0.28f},          // 20
-             {"lowCutSlope", 12.0},          // 21
+             {"peakFrequency", 406.f},       // 3
+             {"peakGain", -4.f},             // 4
+             {"peakQuality", 0.71f},         // 5
+             {"peak2Frequency", 1200.f},     // 6
+             {"peak2Gain", 0.f},             // 7
+             {"peak2Quality", 0.35f},        // 8
+             {"peak3Frequency", 1360.f},     // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.13f},        // 11
+             {"peak4Frequency", 6200.f},     // 12
+             {"peak4Gain", 3.5f},            // 13
+             {"peak4Quality", 0.46f},        // 14
+             {"lowShelfFrequency", 46.f},    // 15
+             {"lowShelfGain", -23.9f},       // 16
+             {"lowShelfQ", 1.2f},            // 17
+             {"highShelfFrequency", 6450.f}, // 18
+             {"highShelfGain", -8.2f},       // 19
+             {"highShelfQ", 1.1f},           // 20
+             {"lowCutSlope", 24.0},          // 21
              {"highCutSlope", 12.0},         // 22
-             {"lowCutBypass", JUCE_OFF},     // 23
+             {"lowCutBypass", JUCE_ON},      // 23
              {"peakBypass", JUCE_OFF},       // 24
              {"peak2Bypass", JUCE_ON},       // 25
-             {"peak3Bypass", JUCE_OFF},      // 26
-             {"peak4Bypass", JUCE_OFF},      // 27
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_ON},       // 27
              {"lowShelfBypass", JUCE_OFF},   // 28
              {"highShelfBypass", JUCE_OFF},  // 29
              {"highCutBypass", JUCE_ON},     // 30
              {"analyzerEnabled", JUCE_ON}},  // 31
-        },                                   // Background Vocals
+        },                                   // Piano
+        {
+            "Reverb",
+            {{"lowCutFrequency", 600.f},     // 1
+             {"highCutFrequency", 10000.f},  // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 250.f},      // 6
+             {"peak2Gain", 0.f},             // 7
+             {"peak2Quality", 0.3f},         // 8
+             {"peak3Frequency", 750.f},      // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 2500.f},     // 12
+             {"peak4Gain", 0.f},             // 13
+             {"peak4Quality", 0.2f},         // 14
+             {"lowShelfFrequency", 75.f},    // 15
+             {"lowShelfGain", 0.f},          // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_ON},       // 25
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_ON},       // 27
+             {"lowShelfBypass", JUCE_ON},    // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_OFF},    // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Reverb
+        {
+            "Snare",
+            {{"lowCutFrequency", 104.f},      // 1
+             {"highCutFrequency", 20000.f},   // 2
+             {"peakFrequency", 100.f},        // 3
+             {"peakGain", 0.f},               // 4
+             {"peakQuality", 0.6f},           // 5
+             {"peak2Frequency", 3300.f},      // 6
+             {"peak2Gain", -1.f},             // 7
+             {"peak2Quality", 1.2f},          // 8
+             {"peak3Frequency", 1140.f},      // 9
+             {"peak3Gain", -0.5f},            // 10
+             {"peak3Quality", 0.93f},         // 11
+             {"peak4Frequency", 316.f},       // 12
+             {"peak4Gain", 1.f},              // 13
+             {"peak4Quality", 1.4f},          // 14
+             {"lowShelfFrequency", 75.f},     // 15
+             {"lowShelfGain", 0.f},           // 16
+             {"lowShelfQ", 1.f},              // 17
+             {"highShelfFrequency", 14600.f}, // 18
+             {"highShelfGain", 1.5f},         // 19
+             {"highShelfQ", 2.f},             // 20
+             {"lowCutSlope", 24.0},           // 21
+             {"highCutSlope", 24.0},          // 22
+             {"lowCutBypass", JUCE_OFF},      // 23
+             {"peakBypass", JUCE_ON},         // 24
+             {"peak2Bypass", JUCE_OFF},       // 25
+             {"peak3Bypass", JUCE_OFF},       // 26
+             {"peak4Bypass", JUCE_OFF},       // 27
+             {"lowShelfBypass", JUCE_ON},     // 28
+             {"highShelfBypass", JUCE_OFF},   // 29
+             {"highCutBypass", JUCE_ON},      // 30
+             {"analyzerEnabled", JUCE_ON}},   // 31
+        },                                    // Snare
+        {
+            "Snare 2",
+            {{"lowCutFrequency", 146.f},      // 1
+             {"highCutFrequency", 20000.f},   // 2
+             {"peakFrequency", 100.f},        // 3
+             {"peakGain", 0.f},               // 4
+             {"peakQuality", 0.6f},           // 5
+             {"peak2Frequency", 186.f},       // 6
+             {"peak2Gain", 0.f},              // 7
+             {"peak2Quality", 0.3f},          // 8
+             {"peak3Frequency", 750.f},       // 9
+             {"peak3Gain", 0.f},              // 10
+             {"peak3Quality", 0.3f},          // 11
+             {"peak4Frequency", 2500.f},      // 12
+             {"peak4Gain", -4.f},             // 13
+             {"peak4Quality", 2.3f},          // 14
+             {"lowShelfFrequency", 75.f},     // 15
+             {"lowShelfGain", 0.f},           // 16
+             {"lowShelfQ", 1.f},              // 17
+             {"highShelfFrequency", 14600.f}, // 18
+             {"highShelfGain", 2.5f},         // 19
+             {"highShelfQ", 1.5f},            // 20
+             {"lowCutSlope", 48.0},           // 21
+             {"highCutSlope", 24.0},          // 22
+             {"lowCutBypass", JUCE_OFF},      // 23
+             {"peakBypass", JUCE_ON},         // 24
+             {"peak2Bypass", JUCE_OFF},       // 25
+             {"peak3Bypass", JUCE_OFF},       // 26
+             {"peak4Bypass", JUCE_OFF},       // 27
+             {"lowShelfBypass", JUCE_ON},     // 28
+             {"highShelfBypass", JUCE_OFF},   // 29
+             {"highCutBypass", JUCE_ON},      // 30
+             {"analyzerEnabled", JUCE_ON}},   // 31
+        },                                    // Snare 2
+        {
+            "Snare 3",
+            {{"lowCutFrequency", 266.f},     // 1
+             {"highCutFrequency", 20000.f},  // 2
+             {"peakFrequency", 326.f},       // 3
+             {"peakGain", 4.5f},             // 4
+             {"peakQuality", 0.83f},         // 5
+             {"peak2Frequency", 1220.f},     // 6
+             {"peak2Gain", -4.5f},           // 7
+             {"peak2Quality", 0.48f},        // 8
+             {"peak3Frequency", 1200.f},     // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.71f},        // 11
+             {"peak4Frequency", 5500.f},     // 12
+             {"peak4Gain", 5.5f},            // 13
+             {"peak4Quality", 0.71f},        // 14
+             {"lowShelfFrequency", 80.f},    // 15
+             {"lowShelfGain", 0.f},          // 16
+             {"lowShelfQ", 1.1f},            // 17
+             {"highShelfFrequency", 7600.f}, // 18
+             {"highShelfGain", 5.5f},        // 19
+             {"highShelfQ", 0.71f},          // 20
+             {"lowCutSlope", 48.0},          // 21
+             {"highCutSlope", 12.0},         // 22
+             {"lowCutBypass", JUCE_OFF},     // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_OFF},      // 25
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_ON},       // 27
+             {"lowShelfBypass", JUCE_ON},    // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Snare 3
+        {
+            "Strings",
+            {{"lowCutFrequency", 20.f},      // 1
+             {"highCutFrequency", 20000.f},  // 2
+             {"peakFrequency", 100.f},       // 3
+             {"peakGain", 0.f},              // 4
+             {"peakQuality", 0.6f},          // 5
+             {"peak2Frequency", 250.f},      // 6
+             {"peak2Gain", 0.f},             // 7
+             {"peak2Quality", 0.3f},         // 8
+             {"peak3Frequency", 750.f},      // 9
+             {"peak3Gain", 0.f},             // 10
+             {"peak3Quality", 0.3f},         // 11
+             {"peak4Frequency", 2800.f},     // 12
+             {"peak4Gain", 1.5f},            // 13
+             {"peak4Quality", 0.35f},        // 14
+             {"lowShelfFrequency", 74.f},    // 15
+             {"lowShelfGain", -24.f},        // 16
+             {"lowShelfQ", 1.f},             // 17
+             {"highShelfFrequency", 7500.f}, // 18
+             {"highShelfGain", 0.f},         // 19
+             {"highShelfQ", 1.f},            // 20
+             {"lowCutSlope", 24.0},          // 21
+             {"highCutSlope", 24.0},         // 22
+             {"lowCutBypass", JUCE_ON},      // 23
+             {"peakBypass", JUCE_ON},        // 24
+             {"peak2Bypass", JUCE_ON},       // 25
+             {"peak3Bypass", JUCE_ON},       // 26
+             {"peak4Bypass", JUCE_OFF},      // 27
+             {"lowShelfBypass", JUCE_OFF},   // 28
+             {"highShelfBypass", JUCE_ON},   // 29
+             {"highCutBypass", JUCE_ON},     // 30
+             {"analyzerEnabled", JUCE_ON}},  // 31
+        },                                   // Strings
         {
             "Vocal Bus 1",
             {{"lowCutFrequency", 100.f},     // 1
