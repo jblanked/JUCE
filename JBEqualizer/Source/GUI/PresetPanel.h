@@ -96,7 +96,8 @@ namespace GUI
 		void loadPresetList()
 		{
 			presetList.clear(dontSendNotification);
-			const auto allPresets = presetManager.getAllPresets();
+			auto allPresets = presetManager.getAllPresets();
+			allPresets.sort(true);
 			const auto currentPreset = presetManager.getCurrentPreset();
 			presetList.addItemList(allPresets, 1);
 			presetList.setSelectedItemIndex(allPresets.indexOf(currentPreset), dontSendNotification);
