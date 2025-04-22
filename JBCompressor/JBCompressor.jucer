@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="bqRIQ1" name="JBCompressor" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+  <MAINGROUP id="w50BD7" name="JBCompressor">
+    <GROUP id="{57AE0509-A9AB-5C4F-E25A-B3ED95F0FAB3}" name="Source">
+      <GROUP id="{E0117055-8CC6-5AB9-0834-BAFD5A7EC6DA}" name="DSP">
+        <FILE id="p4rVMN" name="Compressor.h" compile="0" resource="0" file="Source/DSP/Compressor.h"/>
+      </GROUP>
+      <GROUP id="{5E518F7B-6DE6-72B0-EB68-B9B7EA6F9983}" name="GUI">
+        <FILE id="q6yVHG" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomLookAndFeel.cpp"/>
+        <FILE id="cq0XPa" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/GUI/CustomLookAndFeel.h"/>
+        <FILE id="Tjnizs" name="RotarySliderWithLabels.h" compile="0" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.h"/>
+        <FILE id="jgfDVe" name="RotarySliderWithLabels.cpp" compile="1" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.cpp"/>
+        <FILE id="iUZjU3" name="VerticalSliderWithLabels.cpp" compile="1" resource="0"
+              file="Source/GUI/VerticalSliderWithLabels.cpp"/>
+        <FILE id="QnsU55" name="VerticalSliderWithLabels.h" compile="0" resource="0"
+              file="Source/GUI/VerticalSliderWithLabels.h"/>
+        <FILE id="UJVaB5" name="PresetPanel.h" compile="0" resource="0" file="Source/GUI/PresetPanel.h"/>
+      </GROUP>
+      <GROUP id="{0DCE4072-07E2-4020-8464-A396D8707DEB}" name="Service">
+        <FILE id="ZWODs6" name="ParameterManager.cpp" compile="1" resource="0"
+              file="Source/Service/ParameterManager.cpp"/>
+        <FILE id="JuOVnX" name="ParameterManager.h" compile="0" resource="0"
+              file="Source/Service/ParameterManager.h"/>
+        <FILE id="MRxZNM" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Service/PresetManager.cpp"/>
+        <FILE id="IAZR3x" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
+      </GROUP>
+      <FILE id="bAQQyB" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="XgST1I" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="mGQ1Kz" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="NRsSSP" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="sL5AzE" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="JBCompressor"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="JBCompressor"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
