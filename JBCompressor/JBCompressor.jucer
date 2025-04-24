@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="bqRIQ1" name="JBCompressor" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyWebsite="www.jblanked.com"
+              companyCopyright="2025" companyName="JBlanked" version="1.0.1"
+              pluginVST3Category="Dynamics" pluginAAXCategory="2" companyEmail="jblanked@jblanked.com">
   <MAINGROUP id="w50BD7" name="JBCompressor">
     <GROUP id="{57AE0509-A9AB-5C4F-E25A-B3ED95F0FAB3}" name="Source">
       <GROUP id="{E0117055-8CC6-5AB9-0834-BAFD5A7EC6DA}" name="DSP">
         <FILE id="p4rVMN" name="Compressor.h" compile="0" resource="0" file="Source/DSP/Compressor.h"/>
       </GROUP>
       <GROUP id="{5E518F7B-6DE6-72B0-EB68-B9B7EA6F9983}" name="GUI">
+        <FILE id="Th444Z" name="CompressorVisualizer.h" compile="0" resource="0"
+              file="Source/GUI/CompressorVisualizer.h"/>
+        <FILE id="LIbltd" name="CompressorVisualizer.cpp" compile="1" resource="0"
+              file="Source/GUI/CompressorVisualizer.cpp"/>
         <FILE id="q6yVHG" name="CustomLookAndFeel.cpp" compile="1" resource="0"
               file="Source/GUI/CustomLookAndFeel.cpp"/>
         <FILE id="cq0XPa" name="CustomLookAndFeel.h" compile="0" resource="0"

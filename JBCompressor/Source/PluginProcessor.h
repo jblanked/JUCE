@@ -62,6 +62,11 @@ public:
 
   Service::PresetManager &getPresetManager() { return *presetManager; }
 
+  // Accessors for meters
+  float getGainReduction() const { return compressorModule.getGainReduction(); }
+  float getInputLevel() const { return compressorModule.getInputLevel(); }
+  float getOutputLevel() const { return compressorModule.getOutputLevel(); }
+
 private:
   juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
   void parameterChanged(const juce::String &parameterID, float newValue) override;

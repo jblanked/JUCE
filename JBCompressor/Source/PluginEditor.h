@@ -14,6 +14,7 @@
 #include "GUI/RotarySliderWithLabels.h"
 #include "GUI/VerticalSliderWithLabels.h"
 #include "GUI/PresetPanel.h"
+#include "GUI/CompressorVisualizer.h"
 
 //==============================================================================
 /**
@@ -54,6 +55,8 @@ private:
   std::vector<juce::Component *> getComps();
 
   GUI::CustomLookAndFeel lnf; // custom look and feel for the editor
+
+  GUI::CompressorVisualizer visualizer;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JBCompressorAudioProcessorEditor)
 };

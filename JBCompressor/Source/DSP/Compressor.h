@@ -1,3 +1,4 @@
+// DSP/Compressor.h
 #pragma once
 #include <JuceHeader.h>
 
@@ -20,10 +21,44 @@ namespace DSP
         void processBlock(juce::AudioBuffer<float> &buffer)
         {
             juce::dsp::AudioBlock<float> block{buffer};
+
+            // —– INPUT GAIN & MEASURE INPUT LEVEL —–
             inputModule.process(juce::dsp::ProcessContextReplacing<float>(block));
+            float maxLevel = 0.0f;
+            for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+            {
+                auto *data = buffer.getReadPointer(ch);
+                for (int i = 0; i < buffer.getNumSamples(); ++i)
+                    maxLevel = std::max(maxLevel, std::abs(data[i]));
+            }
+            float inputLevelDb = juce::Decibels::gainToDecibels(maxLevel);
+            currentInputLevel = inputLevelDb;
+
+            // —– COMPRESSOR —–
             compressorModule.process(juce::dsp::ProcessContextReplacing<float>(block));
+
+            // —– MEASURE OUTPUT LEVEL —–
+            maxLevel = 0.0f;
+            for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+            {
+                auto *data = buffer.getReadPointer(ch);
+                for (int i = 0; i < buffer.getNumSamples(); ++i)
+                    maxLevel = std::max(maxLevel, std::abs(data[i]));
+            }
+            float outputLevelDb = juce::Decibels::gainToDecibels(maxLevel);
+            currentOutputLevel = outputLevelDb;
+
+            // —– GAIN REDUCTION —–
+            currentGainReduction = inputLevelDb - outputLevelDb;
+
+            // —– OUTPUT GAIN —–
             outputModule.process(juce::dsp::ProcessContextReplacing<float>(block));
         }
+
+        // Accessors for visualizer
+        float getGainReduction() const noexcept { return currentGainReduction; }
+        float getInputLevel() const noexcept { return currentInputLevel; }
+        float getOutputLevel() const noexcept { return currentOutputLevel; }
 
         void updateParameters(float inGain, float thresh, float ratio,
                               float attackSec, float releaseSec, float outGain)
@@ -40,35 +75,33 @@ namespace DSP
         juce::dsp::Gain<float> inputModule;
         juce::dsp::Compressor<float> compressorModule;
         juce::dsp::Gain<float> outputModule;
+
+        float currentGainReduction = 0.0f;
+        float currentInputLevel = 0.0f;
+        float currentOutputLevel = 0.0f;
     };
 
     struct CompressorSettings
     {
-        float inputGain{0.f};
-        float threshold{0.f};
-        float ratio{0.f};
-        float attack{0.f};
-        float release{0.f};
-        float outputGain{0.f};
+        float inputGain{0.f}, threshold{0.f}, ratio{0.f},
+            attack{0.f}, release{0.f}, outputGain{0.f};
     };
 
-    // Helper function that extracts settings from the AudioProcessorValueTreeState
     inline auto getCompressorSettings(juce::AudioProcessorValueTreeState &apvts,
-                                      const juce::String &inputGainID = "inputGain",
-                                      const juce::String &thresholdID = "threshold",
+                                      const juce::String &inID = "inputGain",
+                                      const juce::String &threshID = "threshold",
                                       const juce::String &ratioID = "ratio",
                                       const juce::String &attackID = "attack",
                                       const juce::String &releaseID = "release",
-                                      const juce::String &outputGainID = "outputGain")
+                                      const juce::String &outGainID = "outputGain")
     {
-        CompressorSettings settings;
-        settings.inputGain = apvts.getRawParameterValue(inputGainID)->load();
-        settings.threshold = apvts.getRawParameterValue(thresholdID)->load();
-        settings.ratio = apvts.getRawParameterValue(ratioID)->load();
-        settings.attack = apvts.getRawParameterValue(attackID)->load();
-        settings.release = apvts.getRawParameterValue(releaseID)->load();
-        settings.outputGain = apvts.getRawParameterValue(outputGainID)->load();
-        return settings;
+        CompressorSettings s;
+        s.inputGain = apvts.getRawParameterValue(inID)->load();
+        s.threshold = apvts.getRawParameterValue(threshID)->load();
+        s.ratio = apvts.getRawParameterValue(ratioID)->load();
+        s.attack = apvts.getRawParameterValue(attackID)->load();
+        s.release = apvts.getRawParameterValue(releaseID)->load();
+        s.outputGain = apvts.getRawParameterValue(outGainID)->load();
+        return s;
     }
-
 }

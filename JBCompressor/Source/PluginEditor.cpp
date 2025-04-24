@@ -27,7 +27,9 @@ JBCompressorAudioProcessorEditor::JBCompressorAudioProcessorEditor(JBCompressorA
       ratioSliderAttachment(audioProcessor.treeState, "ratio", ratioSlider),
       attackSliderAttachment(audioProcessor.treeState, "attack", attackSlider),
       releaseSliderAttachment(audioProcessor.treeState, "release", releaseSlider),
-      outputGainSliderAttachment(audioProcessor.treeState, "outputGain", outputGainSlider)
+      outputGainSliderAttachment(audioProcessor.treeState, "outputGain", outputGainSlider),
+      //
+      visualizer(audioProcessor.treeState, p)
 {
   thresholdSlider.labels.add({0.f, "-60dB"});
   thresholdSlider.labels.add({1.f, "10dB"});
@@ -46,8 +48,9 @@ JBCompressorAudioProcessorEditor::JBCompressorAudioProcessorEditor(JBCompressorA
     addAndMakeVisible(comp);
 
   addAndMakeVisible(presetPanel);
+  addAndMakeVisible(visualizer);
   setResizable(true, false);
-  setSize(600, 400);
+  setSize(700, 500);
 }
 
 JBCompressorAudioProcessorEditor::~JBCompressorAudioProcessorEditor()
@@ -75,6 +78,10 @@ void JBCompressorAudioProcessorEditor::resized()
   auto presetArea = area.removeFromTop(proportionOfHeight(0.1f));
   presetPanel.setBounds(presetArea);
   area.removeFromTop(5);
+
+  // Add visualizer at the top
+  auto visualizerArea = area.removeFromTop(area.getHeight() * 0.3f);
+  visualizer.setBounds(visualizerArea.reduced(10));
 
   // left/right sliders each 1/4 width
   int quarterW = area.getWidth() / 4;
@@ -121,5 +128,5 @@ std::vector<juce::Component *> JBCompressorAudioProcessorEditor::getComps()
       &attackSlider,
       &releaseSlider,
       &outputGainSlider,
-  };
+      &visualizer};
 }
