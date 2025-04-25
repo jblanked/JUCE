@@ -77,7 +77,7 @@ public:
         buffer.clear();
 
         currentNotes.clear();
-        for (const auto &midiMetadata : midiMessages)
+        for (const auto midiMetadata : midiMessages)
         {
             const auto message = midiMetadata.getMessage();
             if (message.isNoteOn())
@@ -94,14 +94,17 @@ public:
         level.store(peak);
     }
 
-    void paint(juce::Graphics &g) override
+    void paintHeader(juce::Graphics &g)
     {
         g.fillAll(findColour(juce::ResizableWindow::backgroundColourId));
         g.setColour(juce::Colours::white);
         g.setFont(15.0f);
         g.drawFittedText("Choose a preset, then play MIDI...",
                          getLocalBounds(), juce::Justification::centredTop, 1);
+    }
 
+    void paintMeterAndNotes(juce::Graphics &g, bool paintNotes = true)
+    {
         auto area = getLocalBounds().reduced(10);
         area.removeFromTop(presetBox.getHeight() + 20);
 
@@ -178,7 +181,7 @@ public:
         g.setColour(juce::Colours::aqua);
         g.drawLine(cx, cy, x2, y2, 4.0f);
 
-        if (currentNotes.size() > 0)
+        if (paintNotes && currentNotes.size() > 0)
         {
             g.setColour(juce::Colours::white);
             g.setFont(18.0f);
@@ -198,6 +201,12 @@ public:
                        juce::Rectangle<float>(cx - radius * 0.7f, cy - 30.0f, radius * 1.4f, 20.0f),
                        juce::Justification::centred);
         }
+    }
+
+    void paint(juce::Graphics &g) override
+    {
+        paintHeader(g);
+        paintMeterAndNotes(g);
     }
 
     void resized() override
