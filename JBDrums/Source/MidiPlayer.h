@@ -21,21 +21,76 @@ public:
         int rootMidiNote;
     };
 
-    MidiPlayer()
+    MidiPlayer(juce::AudioProcessor &processor)
+        : apvts(processor, nullptr, "Parameters", createParameterLayout())
     {
         formatManager.registerBasicFormats();
         for (int i = 0; i < numVoices; ++i)
             synth.addVoice(new juce::SamplerVoice());
 
         addAndMakeVisible(presetBox);
-        presetBox.onChange = [this]
-        { selectPreset(presetBox.getSelectedItemIndex()); };
+
+        presetBox.onChange = [this]()
+        {
+            auto name = presetBox.getText();
+            selectPresetByName(name);
+            lastPresetName = name;
+            if (auto *choice = dynamic_cast<juce::AudioParameterChoice *>(apvts.getParameter("presetChoice")))
+            {
+                int idx = choice->choices.indexOf(name);
+                if (idx >= 0)
+                {
+                    float normalized = static_cast<float>(idx) / static_cast<float>(choice->choices.size() - 1);
+                    choice->setValueNotifyingHost(normalized);
+                }
+            }
+        };
 
         level.store(1.0f);
         startTimerHz(30);
     }
 
     ~MidiPlayer() override = default;
+
+    juce::StringArray parameterChoices{"Empty", "List"}; // two params required
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
+    {
+        auto param = std::make_unique<juce::AudioParameterChoice>(
+            juce::ParameterID("presetChoice", 1),
+            "Preset",
+            parameterChoices,
+            0);
+
+        return {std::move(param)};
+    }
+
+    void finalize()
+    {
+        if (auto *choice = dynamic_cast<juce::AudioParameterChoice *>(apvts.getParameter("presetChoice")))
+        {
+            juce::String presetName = choice->choices[choice->getIndex()];
+            selectPresetByName(presetName);
+        }
+
+        // Set up the callback for UI changes
+        presetBox.onChange = [this]()
+        {
+            auto name = presetBox.getText();
+            selectPresetByName(name);
+            lastPresetName = name;
+            if (auto *choice = dynamic_cast<juce::AudioParameterChoice *>(apvts.getParameter("presetChoice")))
+            {
+                // Find that name's index
+                int idx = choice->choices.indexOf(name);
+                if (idx >= 0)
+                {
+                    // Store this in the parameter
+                    choice->setValueNotifyingHost((float)idx / (float)(choice->choices.size() - 1));
+                }
+            }
+        };
+    }
 
     void addPreset(const juce::String &name,
                    double attack, double release,
@@ -44,14 +99,13 @@ public:
                    size_t sampleDataSize,
                    int rootMidiNote = 60)
     {
-        // Add to presets vector
         presets.push_back({name, attack, release, maxSampleLength,
                            sampleData, sampleDataSize, rootMidiNote});
 
-        // Clear combo box and repopulate in alphabetical order
         presetBox.clear();
+        parameterChoices.clear();
 
-        // Sort the preset names alphabetically and add to combo box
+        // Sort the preset names alphabetically
         std::vector<juce::String> presetNames;
         for (const auto &preset : presets)
             presetNames.push_back(preset.name);
@@ -60,13 +114,38 @@ public:
                   [](const juce::String &a, const juce::String &b)
                   { return a.compareIgnoreCase(b) < 0; });
 
+        // Populate both ComboBox and parameter choices
         for (int i = 0; i < presetNames.size(); ++i)
+        {
             presetBox.addItem(presetNames[i], i + 1);
+            parameterChoices.add(presetNames[i]);
+        }
 
+        // Make sure we have at least one item to avoid division by zero
+        if (parameterChoices.isEmpty())
+            parameterChoices.add("No Presets");
+
+        // Set the selected preset
         if (presets.size() == 1)
             presetBox.setSelectedId(1);
         else
             presetBox.setText(presets.back().name);
+
+        // Update the parameter value
+        if (auto *choiceParam = dynamic_cast<juce::AudioParameterChoice *>(
+                apvts.getParameter("presetChoice")))
+        {
+            int selectedIndex = presetBox.getSelectedItemIndex();
+            if (selectedIndex >= 0 && parameterChoices.size() > 0)
+            {
+                float normalizedValue = static_cast<float>(selectedIndex) /
+                                        static_cast<float>(juce::jmax(1, parameterChoices.size() - 1));
+                choiceParam->setValueNotifyingHost(normalizedValue);
+            }
+        }
+
+        selectPresetByName(presetBox.getText());
+        lastPresetName = presetBox.getText();
     }
 
     void prepareToPlay(double sampleRate)
@@ -217,7 +296,71 @@ public:
         presetBox.setBounds(getLocalBounds().reduced(20).removeFromTop(30));
     }
 
+    // Persist both the APVTS tree and our lastPresetName
+    void getStateInformation(juce::MemoryBlock &destData)
+    {
+        apvts.state.setProperty("lastPresetName", lastPresetName, nullptr);
+        juce::MemoryOutputStream stream(destData, true);
+        apvts.state.writeToStream(stream);
+    }
+
+    // Restore both the APVTS tree and our lastPresetName
+    void setStateInformation(const void *data, int sizeInBytes)
+    {
+        auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+        if (!tree.isValid())
+            return;
+
+        apvts.replaceState(tree);
+
+        juce::String savedPreset = tree.getProperty("lastPresetName", juce::String());
+        if (savedPreset.isNotEmpty())
+        {
+            lastPresetName = savedPreset;
+            presetBox.setText(lastPresetName, juce::dontSendNotification);
+            selectPresetByName(lastPresetName);
+        }
+        else if (auto *choice = dynamic_cast<juce::AudioParameterChoice *>(apvts.getParameter("presetChoice")))
+        {
+            // Fallback: use the old parameter index
+            int idx = choice->getIndex();
+            if (idx >= 0 && idx < choice->choices.size())
+            {
+                lastPresetName = choice->choices[idx];
+                presetBox.setSelectedId(idx + 1, juce::dontSendNotification);
+                selectPresetByName(lastPresetName);
+            }
+        }
+    }
+
+    void selectPresetByName(const juce::String &name)
+    {
+        for (auto &p : presets)
+            if (p.name == name)
+            {
+                auto stream = std::make_unique<juce::MemoryInputStream>(p.sampleData,
+                                                                        p.sampleDataSize,
+                                                                        false);
+                if (auto reader = formatManager.createReaderFor(std::move(stream)))
+                {
+                    synth.clearSounds();
+                    juce::BigInteger allNotes;
+                    allNotes.setRange(0, 128, true);
+                    synth.addSound(new juce::SamplerSound(p.name,
+                                                          *reader,
+                                                          allNotes,
+                                                          p.rootMidiNote,
+                                                          p.attack,
+                                                          p.release,
+                                                          p.maxSampleLength));
+                }
+                return;
+            }
+    }
+
 private:
+    juce::String lastPresetName;
+    juce::AudioProcessorValueTreeState apvts;
     void selectPreset(int comboBoxIndex)
     {
         // Get the selected preset name from the combo box

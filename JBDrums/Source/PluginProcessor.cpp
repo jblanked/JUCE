@@ -19,10 +19,11 @@ JBDrumsAudioProcessor::JBDrumsAudioProcessor()
 #endif
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-      )
+                         ),
+      midiPlayer(*this)
 #endif
 {
-    // Rock
+    // Add all presets
     midiPlayer.addPreset("Rock Hi-Hat", 0.0, 0.1, 10.0, BinaryData::Rock_HiHat_1_wav, BinaryData::Rock_HiHat_1_wavSize);
     midiPlayer.addPreset("Rock Hi-Hat 2", 0.0, 0.1, 10.0, BinaryData::Rock_HiHat_3_wav, BinaryData::Rock_HiHat_3_wavSize);
     midiPlayer.addPreset("Rock Kick", 0.0, 0.1, 10.0, BinaryData::Rock_Kick_1_wav, BinaryData::Rock_Kick_1_wavSize);
@@ -39,6 +40,8 @@ JBDrumsAudioProcessor::JBDrumsAudioProcessor()
     midiPlayer.addPreset("Trap Kick", 0.0, 0.1, 10.0, BinaryData::Trap_Kick_wav, BinaryData::Trap_Kick_wavSize);
     midiPlayer.addPreset("Trap Snare", 0.0, 0.1, 10.0, BinaryData::Trap_Snare_wav, BinaryData::Trap_Snare_wavSize);
     midiPlayer.addPreset("Trap 808", 0.0, 0.1, 10.0, BinaryData::Trap_808_C3_wav, BinaryData::Trap_808_C3_wavSize);
+
+    midiPlayer.finalize();
 }
 
 JBDrumsAudioProcessor::~JBDrumsAudioProcessor()
@@ -166,15 +169,12 @@ juce::AudioProcessorEditor *JBDrumsAudioProcessor::createEditor()
 //==============================================================================
 void JBDrumsAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    midiPlayer.getStateInformation(destData);
 }
 
 void JBDrumsAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    midiPlayer.setStateInformation(data, sizeInBytes);
 }
 
 //==============================================================================

@@ -55,6 +55,7 @@ public:
   void setStateInformation(const void *data, int sizeInBytes) override;
 
   MidiPlayer midiPlayer; // Instance of the MidiPlayer class
+
 private:
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JBDrumsAudioProcessor)
