@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="ZyBioX" name="JBDrums" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="1.0.0"
+              companyName="JBlanked" companyCopyright="2025" companyWebsite="www.jblanked.com"
+              companyEmail="jblanked@jblanked.com" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3">
+  <MAINGROUP id="Am7vCH" name="JBDrums">
+    <GROUP id="{C5E9896A-6E8A-E0D5-0EDD-8EB6753FBAFE}" name="Samples">
+      <FILE id="jpTr6s" name="Boom_Bap_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_HiHat.wav"/>
+      <FILE id="VVH8tk" name="Boom_Bap_Kick.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Kick.wav"/>
+      <FILE id="RJ8Y6o" name="Boom_Bap_Open_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Open_HiHat.wav"/>
+      <FILE id="v5pNgJ" name="Boom_Bap_Snare.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Snare.wav"/>
+      <FILE id="qU9oSh" name="Rock_HiHat_1.wav" compile="0" resource="1"
+            file="Samples/Rock_HiHat_1.wav"/>
+      <FILE id="wPZKwr" name="Rock_HiHat_3.wav" compile="0" resource="1"
+            file="Samples/Rock_HiHat_3.wav"/>
+      <FILE id="D3bHSD" name="Rock_Kick_1.wav" compile="0" resource="1" file="Samples/Rock_Kick_1.wav"/>
+      <FILE id="YC0vim" name="Rock_Snare_1.wav" compile="0" resource="1"
+            file="Samples/Rock_Snare_1.wav"/>
+      <FILE id="Y91k0s" name="Rock_Snare_3.wav" compile="0" resource="1"
+            file="Samples/Rock_Snare_3.wav"/>
+      <FILE id="NTtxGJ" name="Trap_808_C3.wav" compile="0" resource="1" file="Samples/Trap_808_C3.wav"/>
+      <FILE id="JDksZF" name="Trap_HiHat.wav" compile="0" resource="1" file="Samples/Trap_HiHat.wav"/>
+      <FILE id="Xj0OtI" name="Trap_HiHat_2.wav" compile="0" resource="1"
+            file="Samples/Trap_HiHat_2.wav"/>
+      <FILE id="b2UibB" name="Trap_Kick.wav" compile="0" resource="1" file="Samples/Trap_Kick.wav"/>
+      <FILE id="PpkNK6" name="Trap_Snare.wav" compile="0" resource="1" file="Samples/Trap_Snare.wav"/>
+    </GROUP>
+    <GROUP id="{B75DCF5E-031D-527C-FAB6-27E5C77B9B0E}" name="Source">
+      <FILE id="CzjV7J" name="MidiPlayer.h" compile="0" resource="0" file="Source/MidiPlayer.h"/>
+      <FILE id="oXlNiY" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="HF09AU" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="XTatMr" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="C3dItU" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="JBDrums"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="JBDrums"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
