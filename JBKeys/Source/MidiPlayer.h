@@ -181,7 +181,7 @@ public:
         g.fillAll(findColour(juce::ResizableWindow::backgroundColourId));
         g.setColour(juce::Colours::white);
         g.setFont(15.0f);
-        g.drawFittedText("Choose a preset, then play C3 on your Midi...",
+        g.drawFittedText("Choose a preset, then play a note on your MIDI...",
                          getLocalBounds(), juce::Justification::centredTop, 1);
     }
 
