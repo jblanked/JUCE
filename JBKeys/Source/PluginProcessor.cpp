@@ -19,7 +19,8 @@ JBKeysAudioProcessor::JBKeysAudioProcessor()
 #endif
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-      )
+                         ),
+      player(*this)
 #endif
 {
     player.addPreset("Violin", 0.0, 0.1, 10.0, BinaryData::Violin_C3_wav, BinaryData::Violin_C3_wavSize);
@@ -29,6 +30,8 @@ JBKeysAudioProcessor::JBKeysAudioProcessor()
     player.addPreset("Bass Rock", 0.0, 0.1, 10.0, BinaryData::Bass_Rock_C2_wav, BinaryData::Bass_Rock_C2_wavSize);
     player.addPreset("Electric Guitar", 0.0, 0.1, 10.0, BinaryData::Electric_Guitar_C3_wav, BinaryData::Electric_Guitar_C3_wavSize);
     player.addPreset("Bass", 0.0, 0.1, 10.0, BinaryData::Bass_C2_wav, BinaryData::Bass_C2_wavSize);
+
+    player.finalize();
 }
 
 JBKeysAudioProcessor::~JBKeysAudioProcessor()
@@ -156,15 +159,12 @@ juce::AudioProcessorEditor *JBKeysAudioProcessor::createEditor()
 //==============================================================================
 void JBKeysAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    player.getStateInformation(destData);
 }
 
 void JBKeysAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    player.setStateInformation(data, sizeInBytes);
 }
 
 //==============================================================================

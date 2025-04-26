@@ -3,7 +3,8 @@
 <JUCERPROJECT id="aJclt0" name="JBKeys" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="JBlanked"
               companyCopyright="2025" companyWebsite="www.jblanked.com" companyEmail="jblanked@jblanked.com"
-              version="1.0.0" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              version="1.0.0" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="MPbS5F" name="JBKeys">
     <GROUP id="{76967068-34C4-B150-99D6-53416D0833C8}" name="Source">
       <FILE id="CLsHwA" name="MidiPlayer.h" compile="0" resource="0" file="Source/MidiPlayer.h"/>
