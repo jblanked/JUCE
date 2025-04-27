@@ -31,18 +31,9 @@ public:
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
 
-  juce::MidiMessageSequence generateMidiLoop(int numBars, int beatsPerBar, float bpm);
-  juce::AudioBuffer<float> generateAudioLoop(int lengthInSamples, double sampleRate);
-
-  juce::MidiMessageSequence &getGeneratedMidiLoop() { return midiLoop; }
-  juce::AudioBuffer<float> &getGeneratedAudioBuffer() { return audioLoop; }
-
   juce::AudioProcessorValueTreeState parameters;
 
 private:
-  juce::MidiMessageSequence midiLoop;
-  juce::AudioBuffer<float> audioLoop;
-
   juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LoopGeneratorAudioProcessor)

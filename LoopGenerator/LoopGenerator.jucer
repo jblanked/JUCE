@@ -7,6 +7,14 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="RMrvqT" name="LoopGenerator">
     <GROUP id="{FE93C178-7516-4904-3397-B28000DB4A80}" name="Source">
+      <GROUP id="{FBC58E7A-F259-2FCB-C711-A98905AA78ED}" name="Service">
+        <FILE id="S0x8lR" name="DraggableLoopComponent.h" compile="0" resource="0"
+              file="Source/Service/DraggableLoopComponent.h"/>
+        <FILE id="oSwf5u" name="MidiLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/MidiLoopGenerator.h"/>
+        <FILE id="HbrpdZ" name="AudioLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/AudioLoopGenerator.h"/>
+      </GROUP>
       <FILE id="DtsUzP" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="zx7aG6" name="PluginProcessor.h" compile="0" resource="0"

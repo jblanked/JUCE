@@ -1,91 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
-DraggableLoopComponent::DraggableLoopComponent(const juce::String &name, const juce::Colour &color)
-    : name(name), color(color)
-{
-  setMouseCursor(juce::MouseCursor::DraggingHandCursor);
-}
-
-DraggableLoopComponent::~DraggableLoopComponent()
-{
-}
-
-void DraggableLoopComponent::paint(juce::Graphics &g)
-{
-  // Create a rounded-rectangle background
-  g.setColour(color);
-  g.fillRoundedRectangle(getLocalBounds().toFloat(), 10.0f);
-
-  // Add text
-  g.setColour(juce::Colours::white);
-  g.setFont(14.0f);
-  g.drawText(name, getLocalBounds(), juce::Justification::centred);
-
-  // Add instruction text
-  g.setFont(10.0f);
-  g.drawText("Drag me to your DAW", getLocalBounds().removeFromBottom(15),
-             juce::Justification::centredBottom);
-}
-
-void DraggableLoopComponent::mouseDown(const juce::MouseEvent &e)
-{
-  // check if we have data
-  if (loopData.getSize() == 0)
-  {
-    return;
-  }
-
-  // Create a temporary file in system temp directory
-  juce::File tempDirectory = juce::File::getSpecialLocation(juce::File::tempDirectory);
-  juce::String filename = name.replaceCharacter(' ', '_') + "_" +
-                          juce::String(juce::Random::getSystemRandom().nextInt(10000)) +
-                          "." + fileFormat;
-  juce::File tempFile = tempDirectory.getChildFile(filename);
-
-  // Make sure we can write to this location
-  bool fileCreated = tempFile.create();
-
-  if (fileCreated)
-  {
-    // Now write the data
-    juce::FileOutputStream stream(tempFile);
-    if (stream.openedOk())
-    {
-      bool writeSuccess = stream.write(loopData.getData(), loopData.getSize());
-      stream.flush();
-
-      if (writeSuccess)
-      {
-        juce::StringArray files;
-        files.add(tempFile.getFullPathName());
-        juce::DragAndDropContainer *dragContainer = juce::DragAndDropContainer::findParentDragContainerFor(this);
-        if (dragContainer != nullptr)
-        {
-          dragContainer->performExternalDragDropOfFiles(files, true);
-        }
-        else
-        {
-          juce::Component *parent = getParentComponent();
-          if (parent != nullptr)
-          {
-            tempFile.revealToUser();
-          }
-        }
-      }
-    }
-  }
-}
-void DraggableLoopComponent::mouseDrag(const juce::MouseEvent &e)
-{
-  // Already handled by mouseDown
-}
-
-void DraggableLoopComponent::setLoopData(const juce::MemoryBlock &data, const juce::String &format)
-{
-  loopData = data;
-  fileFormat = format;
-}
+#include "Service/MidiLoopGenerator.h"
+#include "Service/AudioLoopGenerator.h"
 
 LoopGeneratorAudioProcessorEditor::LoopGeneratorAudioProcessorEditor(LoopGeneratorAudioProcessor &p,
                                                                      juce::AudioProcessorValueTreeState &params)
@@ -269,13 +185,14 @@ void LoopGeneratorAudioProcessorEditor::generateMidiLoop()
   // Get parameters
   int numBars = static_cast<int>(*parameters.getRawParameterValue("numBars"));
   int beatsPerBar = static_cast<int>(*parameters.getRawParameterValue("beatsPerBar"));
+  float freq = *parameters.getRawParameterValue("frequency");
   float bpm = *parameters.getRawParameterValue("bpm");
 
   // Generate MIDI loop
-  juce::MidiMessageSequence midiLoop = audioProcessor.generateMidiLoop(numBars, beatsPerBar, bpm);
+  juce::MidiMessageSequence midiLoop = MidiLoopGenerator::generateMidiLoop(freq, numBars, beatsPerBar, bpm);
 
   // Create MIDI file
-  juce::MemoryBlock midiFileData = createMidiFile(midiLoop);
+  juce::MemoryBlock midiFileData = MidiLoopGenerator::createMidiFile(midiLoop);
 
   // Update draggable component
   midiLoopComponent->setLoopData(midiFileData, "mid");
@@ -287,6 +204,8 @@ void LoopGeneratorAudioProcessorEditor::generateAudioLoop()
   float bpm = *parameters.getRawParameterValue("bpm");
   int numBars = static_cast<int>(*parameters.getRawParameterValue("numBars"));
   int beatsPerBar = static_cast<int>(*parameters.getRawParameterValue("beatsPerBar"));
+  float frequency = *parameters.getRawParameterValue("frequency");
+  auto waveform = static_cast<int>(*parameters.getRawParameterValue("waveform"));
 
   // Calculate the length of the audio in samples
   double sampleRate = audioProcessor.getSampleRate();
@@ -298,47 +217,17 @@ void LoopGeneratorAudioProcessorEditor::generateAudioLoop()
   int lengthInSamples = static_cast<int>(loopLengthInSeconds * sampleRate);
 
   // Generate audio loop
-  juce::AudioBuffer<float> audioLoop = audioProcessor.generateAudioLoop(lengthInSamples, sampleRate);
+  juce::AudioBuffer<float> audioLoop = AudioLoopGenerator::generateAudioLoop(frequency,
+                                                                             lengthInSamples,
+                                                                             sampleRate,
+                                                                             bpm,
+                                                                             waveform,
+                                                                             2 // number of channels
+                                                                             );
 
   // Create WAV file
-  juce::MemoryBlock wavFileData = createWavFile(audioLoop, sampleRate);
+  juce::MemoryBlock wavFileData = AudioLoopGenerator::createWavFile(audioLoop, sampleRate);
 
   // Update draggable component
   audioLoopComponent->setLoopData(wavFileData, "wav");
-}
-
-juce::MemoryBlock LoopGeneratorAudioProcessorEditor::createMidiFile(const juce::MidiMessageSequence &midiSequence)
-{
-  juce::MemoryBlock result;
-
-  juce::MidiFile midiFile;
-  midiFile.setTicksPerQuarterNote(960);
-  midiFile.addTrack(midiSequence);
-
-  // Write to memory
-  juce::MemoryOutputStream stream(result, false);
-  midiFile.writeTo(stream);
-
-  return result;
-}
-
-juce::MemoryBlock LoopGeneratorAudioProcessorEditor::createWavFile(const juce::AudioBuffer<float> &audioBuffer, double sampleRate)
-{
-  juce::MemoryBlock result;
-
-  // Set up an output stream
-  juce::WavAudioFormat wavFormat;
-  std::unique_ptr<juce::AudioFormatWriter> writer(wavFormat.createWriterFor(
-      new juce::MemoryOutputStream(result, false),
-      sampleRate,
-      audioBuffer.getNumChannels(),
-      16, // bit depth
-      {}, 0));
-
-  if (writer != nullptr)
-  {
-    writer->writeFromAudioSampleBuffer(audioBuffer, 0, audioBuffer.getNumSamples());
-  }
-
-  return result;
 }

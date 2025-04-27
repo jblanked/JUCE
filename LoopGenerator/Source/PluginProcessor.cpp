@@ -7,8 +7,6 @@ LoopGeneratorAudioProcessor::LoopGeneratorAudioProcessor()
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       parameters(*this, nullptr, "Parameters", createParameters())
 {
-    audioLoop.setSize(2, 44100 * 4); // 4 seconds of audio buffer
-    audioLoop.clear();
 }
 
 LoopGeneratorAudioProcessor::~LoopGeneratorAudioProcessor()
@@ -101,91 +99,6 @@ void LoopGeneratorAudioProcessor::setStateInformation(const void *data, int size
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(parameters.state.getType()))
             parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
-}
-
-juce::MidiMessageSequence LoopGeneratorAudioProcessor::generateMidiLoop(int numBars, int beatsPerBar, float bpm)
-{
-    midiLoop.clear();
-    float freq = *parameters.getRawParameterValue("frequency");
-    // MIDI note = 69 ⟶ A4 = 440 Hz
-    int midiNote = static_cast<int>(std::round(69.0 + 12.0 * std::log2(freq / 440.0)));
-    const double ticksPerBeat = 960.0; // one quarter-note
-    for (int bar = 0; bar < numBars; ++bar)
-    {
-        for (int beat = 0; beat < beatsPerBar; ++beat)
-        {
-            double time = (bar * beatsPerBar + beat) * ticksPerBeat;
-
-            // Note on
-            auto on = juce::MidiMessage::noteOn(1, midiNote, 1.0f);
-            on.setTimeStamp(time);
-            midiLoop.addEvent(on);
-
-            // Note off one quarter-note later
-            auto off = juce::MidiMessage::noteOff(1, midiNote);
-            off.setTimeStamp(time + ticksPerBeat);
-            midiLoop.addEvent(off);
-        }
-    }
-
-    midiLoop.updateMatchedPairs();
-    return midiLoop;
-}
-
-juce::AudioBuffer<float> LoopGeneratorAudioProcessor::generateAudioLoop(int lengthInSamples, double sampleRate)
-{
-    // Get parameters
-    int waveformType = *parameters.getRawParameterValue("waveform");
-    float frequency = *parameters.getRawParameterValue("frequency");
-    float bpm = *parameters.getRawParameterValue("bpm");
-
-    // Resize the buffer if needed
-    if (audioLoop.getNumSamples() != lengthInSamples)
-        audioLoop.setSize(2, lengthInSamples);
-
-    audioLoop.clear();
-
-    // Generate a simple audio loop based on the selected waveform
-    for (int channel = 0; channel < audioLoop.getNumChannels(); ++channel)
-    {
-        float *channelData = audioLoop.getWritePointer(channel);
-
-        for (int sample = 0; sample < lengthInSamples; ++sample)
-        {
-            double time = sample / sampleRate;
-            double phase = std::fmod(time * frequency, 1.0);
-
-            // Generate different waveforms
-            float value = 0.0f;
-            switch (waveformType)
-            {
-            case 0: // Sine
-                value = std::sin(2.0 * juce::MathConstants<double>::pi * phase);
-                break;
-
-            case 1: // Square
-                value = phase < 0.5 ? 1.0f : -1.0f;
-                break;
-
-            case 2: // Saw
-                value = 2.0f * (float)phase - 1.0f;
-                break;
-
-            case 3: // Triangle
-                value = phase < 0.5 ? 4.0f * (float)phase - 1.0f : 3.0f - 4.0f * (float)phase;
-                break;
-            }
-
-            // Apply some amplitude modulation based on beat position for rhythmic effect
-            double beatsPerSecond = bpm / 60.0;
-            double beatPosition = std::fmod(time * beatsPerSecond, 1.0);
-            float envelope = 0.7f + 0.3f * std::exp(-beatPosition * 4.0);
-
-            channelData[sample] = value * 0.5f * envelope;
-        }
-    }
-
-    return audioLoop;
 }
 
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()

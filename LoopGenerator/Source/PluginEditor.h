@@ -2,27 +2,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-
-class DraggableLoopComponent : public juce::Component
-{
-public:
-  DraggableLoopComponent(const juce::String &name, const juce::Colour &color);
-  ~DraggableLoopComponent() override;
-
-  void paint(juce::Graphics &g) override;
-  void mouseDown(const juce::MouseEvent &e) override;
-  void mouseDrag(const juce::MouseEvent &e) override;
-
-  void setLoopData(const juce::MemoryBlock &data, const juce::String &format);
-
-private:
-  juce::String name;
-  juce::Colour color;
-  juce::MemoryBlock loopData;
-  juce::String fileFormat;
-
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DraggableLoopComponent)
-};
+#include "Service/DraggableLoopComponent.h"
 
 class LoopGeneratorAudioProcessorEditor : public juce::AudioProcessorEditor,
                                           public juce::DragAndDropContainer
@@ -70,8 +50,6 @@ private:
   void setupSliders();
   void generateMidiLoop();
   void generateAudioLoop();
-  juce::MemoryBlock createMidiFile(const juce::MidiMessageSequence &midiSequence);
-  juce::MemoryBlock createWavFile(const juce::AudioBuffer<float> &audioBuffer, double sampleRate);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LoopGeneratorAudioProcessorEditor)
 };
