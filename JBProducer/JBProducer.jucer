@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="AIcrGp" name="JBProducer" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="1.0.0"
+              companyName="JBlanked" companyCopyright="2025" companyWebsite="www.jblanked.com"
+              companyEmail="jblanked@jblanked.com" pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3"
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+  <MAINGROUP id="IeVuYL" name="JBProducer">
+    <GROUP id="{7DAB3BE0-A1BB-50B3-0B02-ECFA10F950B3}" name="Samples">
+      <FILE id="VrXdyA" name="Boom_Bap_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_HiHat.wav"/>
+      <FILE id="EjbHHy" name="Boom_Bap_Kick.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Kick.wav"/>
+      <FILE id="jaDj4I" name="Boom_Bap_Open_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Open_HiHat.wav"/>
+      <FILE id="z0oaSi" name="Boom_Bap_Snare.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Snare.wav"/>
+      <FILE id="IqclkG" name="Trap_808_C3.wav" compile="0" resource="1" file="Samples/Trap_808_C3.wav"/>
+      <FILE id="HToY9P" name="Trap_HiHat.wav" compile="0" resource="1" file="Samples/Trap_HiHat.wav"/>
+      <FILE id="Te1jrD" name="Trap_Kick.wav" compile="0" resource="1" file="Samples/Trap_Kick.wav"/>
+      <FILE id="IfFuJd" name="Trap_Snare.wav" compile="0" resource="1" file="Samples/Trap_Snare.wav"/>
+    </GROUP>
+    <GROUP id="{3BE8A2A0-8B40-1291-D268-0082509E76DC}" name="Source">
+      <GROUP id="{2206BCA9-B737-C6E0-2CF1-67889EE40BC3}" name="Service">
+        <FILE id="bCmCNd" name="AudioLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/AudioLoopGenerator.h"/>
+        <FILE id="A2n96Y" name="DraggableLoopComponent.h" compile="0" resource="0"
+              file="Source/Service/DraggableLoopComponent.h"/>
+        <FILE id="AWkgjE" name="MidiLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/MidiLoopGenerator.h"/>
+        <FILE id="XnLdNk" name="RhythmGenerator.h" compile="0" resource="0"
+              file="Source/Service/RhythmGenerator.h"/>
+        <FILE id="kHLWMA" name="MidiNoteHandler.h" compile="0" resource="0"
+              file="Source/Service/MidiNoteHandler.h"/>
+        <FILE id="x1l1mQ" name="SampleLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/SampleLoopGenerator.h"/>
+        <FILE id="CjntlI" name="MidiToAudio.h" compile="0" resource="0" file="Source/Service/MidiToAudio.h"/>
+        <FILE id="W3I0GZ" name="MidiToAudio.cpp" compile="1" resource="0" file="Source/Service/MidiToAudio.cpp"/>
+      </GROUP>
+      <FILE id="Of8vEN" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="APnBhm" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="eRuFCw" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="TTlPTK" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="nkMHaG" name="Loops.h" compile="0" resource="0" file="Source/Loops.h"/>
+      <FILE id="nXhnyb" name="LoopData.h" compile="0" resource="0" file="Source/LoopData.h"/>
+      <FILE id="P6lYDM" name="LoopDataHelpers.h" compile="0" resource="0"
+            file="Source/LoopDataHelpers.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="JBProducer"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="JBProducer"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
