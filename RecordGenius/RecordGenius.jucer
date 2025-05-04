@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="MO5PJt" name="RecordGenius" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" companyName="JBlanked"
+              companyCopyright="2025" companyWebsite="www.jblanked.com" companyEmail="jblanked@jblanked.com"
+              pluginFormats="buildAAX,buildAU,buildStandalone,buildVST3" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+  <MAINGROUP id="GRA49u" name="RecordGenius">
+    <GROUP id="{FE853DF6-294F-0B4E-9AB3-029DD0853BDF}" name="Samples">
+      <FILE id="jK0IZO" name="Boom_Bap_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_HiHat.wav"/>
+      <FILE id="hl1hnx" name="Boom_Bap_Kick.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Kick.wav"/>
+      <FILE id="ICZfFU" name="Boom_Bap_Open_HiHat.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Open_HiHat.wav"/>
+      <FILE id="gyOGFH" name="Boom_Bap_Snare.wav" compile="0" resource="1"
+            file="Samples/Boom_Bap_Snare.wav"/>
+      <FILE id="au4l8h" name="Trap_808_C3.wav" compile="0" resource="1" file="Samples/Trap_808_C3.wav"/>
+      <FILE id="b1WlLg" name="Trap_HiHat.wav" compile="0" resource="1" file="Samples/Trap_HiHat.wav"/>
+      <FILE id="G5HiE8" name="Trap_Kick.wav" compile="0" resource="1" file="Samples/Trap_Kick.wav"/>
+      <FILE id="qgNOOQ" name="Trap_Snare.wav" compile="0" resource="1" file="Samples/Trap_Snare.wav"/>
+    </GROUP>
+    <GROUP id="{E2B2361C-8566-AB95-CF9E-7346F53B304D}" name="Source">
+      <GROUP id="{68188E7E-FCD1-A47C-2AA3-1B6FA1BF4187}" name="Service">
+        <FILE id="Ppl111" name="AudioLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/AudioLoopGenerator.h"/>
+        <FILE id="SdyVld" name="DraggableLoopComponent.h" compile="0" resource="0"
+              file="Source/Service/DraggableLoopComponent.h"/>
+        <FILE id="OAauxu" name="MidiLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/MidiLoopGenerator.h"/>
+        <FILE id="TMTsjy" name="MidiNoteHandler.h" compile="0" resource="0"
+              file="Source/Service/MidiNoteHandler.h"/>
+        <FILE id="njPYhb" name="MidiToAudio.cpp" compile="1" resource="0" file="Source/Service/MidiToAudio.cpp"/>
+        <FILE id="UyfBbR" name="MidiToAudio.h" compile="0" resource="0" file="Source/Service/MidiToAudio.h"/>
+        <FILE id="pPCkk2" name="ParameterManager.cpp" compile="1" resource="0"
+              file="Source/Service/ParameterManager.cpp"/>
+        <FILE id="p5Z8jt" name="ParameterManager.h" compile="0" resource="0"
+              file="Source/Service/ParameterManager.h"/>
+        <FILE id="GRZaaS" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Service/PresetManager.cpp"/>
+        <FILE id="zNsm5P" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
+        <FILE id="JQVSoS" name="RhythmGenerator.h" compile="0" resource="0"
+              file="Source/Service/RhythmGenerator.h"/>
+        <FILE id="RniRZW" name="SampleLoopGenerator.h" compile="0" resource="0"
+              file="Source/Service/SampleLoopGenerator.h"/>
+      </GROUP>
+      <GROUP id="{8AA3BE6E-C3D5-51A2-BCF4-05916EE8697A}" name="DSP">
+        <FILE id="Kpo4oa" name="BasicAudioProcessor.h" compile="0" resource="0"
+              file="Source/DSP/BasicAudioProcessor.h"/>
+        <FILE id="miw024" name="Compressor.h" compile="0" resource="0" file="Source/DSP/Compressor.h"/>
+        <FILE id="ZquiWz" name="DSPUtilities.cpp" compile="1" resource="0"
+              file="Source/DSP/DSPUtilities.cpp"/>
+        <FILE id="NN6OuR" name="DSPUtilities.h" compile="0" resource="0" file="Source/DSP/DSPUtilities.h"/>
+        <FILE id="JtQ4sJ" name="Fifo.h" compile="0" resource="0" file="Source/DSP/Fifo.h"/>
+      </GROUP>
+      <GROUP id="{9F0CF865-4132-B4AB-EC64-2D137F705892}" name="GUI">
+        <FILE id="Es1niB" name="CompressorVisualizer.cpp" compile="1" resource="0"
+              file="Source/GUI/CompressorVisualizer.cpp"/>
+        <FILE id="qRmo7X" name="CompressorVisualizer.h" compile="0" resource="0"
+              file="Source/GUI/CompressorVisualizer.h"/>
+        <FILE id="ijAOTr" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomLookAndFeel.cpp"/>
+        <FILE id="i6fArR" name="CustomLookAndFeel.h" compile="0" resource="0"
+              file="Source/GUI/CustomLookAndFeel.h"/>
+        <FILE id="Cmr8j0" name="FFTComponents.cpp" compile="1" resource="0"
+              file="Source/GUI/FFTComponents.cpp"/>
+        <FILE id="WxCgWG" name="FFTComponents.h" compile="0" resource="0" file="Source/GUI/FFTComponents.h"/>
+        <FILE id="ZHwg0P" name="PresetPanel.h" compile="0" resource="0" file="Source/GUI/PresetPanel.h"/>
+        <FILE id="Z0qH2m" name="ResponseCurveComponent.cpp" compile="1" resource="0"
+              file="Source/GUI/ResponseCurveComponent.cpp"/>
+        <FILE id="c6ZNJs" name="ResponseCurveComponent.h" compile="0" resource="0"
+              file="Source/GUI/ResponseCurveComponent.h"/>
+        <FILE id="mjnDVU" name="RotarySliderWithLabels.cpp" compile="1" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.cpp"/>
+        <FILE id="Y5JJOL" name="RotarySliderWithLabels.h" compile="0" resource="0"
+              file="Source/GUI/RotarySliderWithLabels.h"/>
+        <FILE id="Rn5D0m" name="VerticalSliderWithLabels.cpp" compile="1" resource="0"
+              file="Source/GUI/VerticalSliderWithLabels.cpp"/>
+        <FILE id="FepDpa" name="VerticalSliderWithLabels.h" compile="0" resource="0"
+              file="Source/GUI/VerticalSliderWithLabels.h"/>
+      </GROUP>
+      <FILE id="EHNuGt" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="ZSmi5M" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="r7IvSJ" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="CrG5EQ" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
+      <FILE id="gbaiFL" name="Settings.h" compile="0" resource="0" file="Source/Settings.h"/>
+      <FILE id="dYZYLp" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="RecordGenius"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="RecordGenius"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
